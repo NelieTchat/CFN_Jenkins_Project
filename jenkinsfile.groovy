@@ -1,14 +1,19 @@
 pipeline {
     agent any
 
+    environment {
+        // Define the credentials ID for GitHub access
+        GIT_CREDENTIALS = credentials('12345678')
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Update 'YOUR-CREDENTIALS-ID' with the actual ID of your Jenkins credentials
+                    // Set up Git with credentials
                     checkout([$class: 'GitSCM', branches: [[name: '*/master']], 
-                               userRemoteConfigs: [[url: 'https://github.com/NelieTchat/CloudNet.CFN.git', 
-                               credentialsId: '12345678']]])
+                               userRemoteConfigs: [[url: 'https://github.com/NelieTchat/CloudNet.CFN.git']],
+                               credentialsId: env.GIT_CREDENTIALS])
                 }
             }
         }
