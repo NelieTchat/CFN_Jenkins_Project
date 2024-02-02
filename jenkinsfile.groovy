@@ -1,51 +1,58 @@
 pipeline {
     agent any
 
-    environment {
-        // Define the credentials ID for GitHub access
-        GIT_CREDENTIALS = credentials('12345678')
-    }
-
     stages {
-        stage('Checkout') {
+        // Stage 1: Linting CloudFormation templates
+        stage('Linting') {
             steps {
                 script {
-                    // Set up Git with credentials
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], 
-                               userRemoteConfigs: [[url: 'https://github.com/NelieTchat/CloudNet.CFN.git']],
-                               credentialsId: env.GIT_CREDENTIALS])
+                    sh 'cfn-lint --include-nested CloudNet-Project-CFN/DB.yaml CloudNet-Project-CFN/network.yaml CloudNet-Project-CFN/webapp.yaml CloudNet-Project-CFN/ssm.yaml'
                 }
             }
         }
 
-        stage('Build') {
+        // Stage 2: Packaging CloudFormation template
+        stage('Building Stack') {
             steps {
-                sh 'echo "Building your project"'
-                // Add build steps as needed
+                script {
+                    def s3BucketName = 'nel-read-buck' // Replace with your actual S3 bucket name
+
+                    // Clean existing workspace
+                    deleteDir()
+
+                    // Package CloudFormation template
+                    sh "aws cloudformation package --template-file CloudNet-Project-CFN/cloudformation.yaml --output-template-file packaged-template.yaml --nel-read-buck"
+                }
             }
         }
 
-        stage('Test') {
+        // Stage 3: Deploying CloudFormation stack
+        stage('Deploying Stack') {
             steps {
-                sh 'echo "Running tests"'
-                // Add test steps as needed
+                script {
+                    // Add your deployment steps using AWS CLI or SDK
+                    // Example: sh "aws cloudformation deploy --template-file packaged-template.yaml --stack-name my-stack-name"
+                }
             }
         }
 
-        stage('Deploy') {
+        // Stage 4: Cleanup (optional)
+        stage('Cleanup') {
             steps {
-                sh 'echo "Deploying your project"'
-                // Add deployment steps as needed
+                script {
+                    // Add your cleanup steps here if needed
+                }
             }
         }
     }
 
+    // Post-pipeline actions
     post {
-        success {
-            echo 'Pipeline succeeded! You can add further actions here.'
+        always {
+            echo 'This will always execute after the pipeline completes.'
         }
         failure {
-            echo 'Pipeline failed! You can add further actions for failure handling.'
+            echo 'Oh no! An error occurred during deployment. Please check the logs for details.'
         }
     }
 }
