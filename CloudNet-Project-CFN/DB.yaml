@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Description": "AWS CloudFormation Sample Template for creating an Amazon RDS DB instance: 
+  Sample template showing how to create a DB instance with Enhanced Monitoring enabled.
+
+Parameters:
+  DBName:
+    Description: My database name.
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
+    Default: Devdb
+  DBInstanceClass:
+    Description: The database instance type of my App database
+    Type: String
+    Default: db.t2.micro 
+    AllowedValues:
+      - db.t2.micro
+      - db.t2.small
+      - db.t2.medium
+      - db.t2.large
+  MultiAZ:
+    Description: Create replica in a different Availability zone.
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    ConstraintDescription: Multi-AZ must be true or false.
+  DBAllocatedStorage:
+    Description: The size of the database (Gb)
+    Type: Number
+    MinValue: '5'
+    MaxValue: '1024'
+    ConstraintDescription: must be between 20 and 1024Gb.
+    Default: 90
+  StorageType:
+    Description: The type of storage.
+    Type: String
+    Default: gp2
+    AllowedValues:
+      - gp2
+      - io1
+    ConstraintDescription: must be a valid storage type.    
+  MasterUsername:
+    Description: Username for MySQL database access
+    NoEcho: 'true'
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    AllowedValues:
+      - admin
+  MasterUserPassword:
+    Description: Password MySQL database access
+    NoEcho: 'true'
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: '(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])^([a-zA-Z0-9]{8,32})$'
+  DBEngineVersion:
+    Description: The database engine version
+    Type: String
+    Default: 8.0.28
+
+Resources:
+  DBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup" 
+    Properties: 
+      DBSubnetGroupName: 'rds-subnet-group'
+      DBSubnetGroupDescription: 'My RDS Subnet Group'
+      SubnetIds: 
+        - !ImportValue Dev-PrivateSubnet3ID
+        - !ImportValue Dev-PrivateSubnet4ID
+      Tags: 
+        - Key: Name
+          Value: Dev-dbsubnetgroup
+  Database:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBName: !Ref DBName
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref DBAllocatedStorage
+      Engine: MySQL
+      EngineVersion: !Ref DBEngineVersion
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DeletionProtection: false
+      PubliclyAccessible: false
+      VPCSecurityGroups:
+           - !ImportValue 'Dev-DBSecurityGroupID'
+      StorageType: !Ref StorageType
+      MultiAZ: !Ref MultiAZ
+      Tags:
+        - Key: Name
+          Value: !Ref DBName
+
+
+  ReadReplica:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      SourceDBInstanceIdentifier: !Ref Database
+      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceIdentifier: !Sub ${DBName}-replica
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: DevReadReplica

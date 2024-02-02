@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation template for an ALB.
+
+Parameters:
+  EnvironmentName:
+    Description: creating securitygroups for LoadBalancer and WebServer - EnvironmentName in params is connected to Outputs in udagram/udacityProject VPC
+    Type: String
+    Default: Dev
+  LatestAmiId:
+    Description: Region specific image from the Parameter Store
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  InstanceType:
+    Description: Amazon EC2 instance type for the instances
+    Type: String
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t3.micro
+    Default: t2.micro
+  OperatorEMail:
+    NoEcho: true  
+    Description: Email address to notify if there are any scaling operations
+    Type: String
+    AllowedPattern: "([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)"
+    ConstraintDescription: must be a valid email address.
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: DevLoadBalancer
+      Subnets:
+        - !ImportValue 'Dev-PublicSubnet1ID'
+        - !ImportValue 'Dev-PublicSubnet2ID'
+      SecurityGroups:
+        - !ImportValue 'Dev-LoadBalancerSecurityGroupID'
+      Scheme: internet-facing
+      Type: application
+      IpAddressType: ipv4
+      Tags:
+        - Key: Name
+          Value: DevLoadBalancer
+
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: TargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+      VpcId: !ImportValue 'Dev-VPCID'
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+
+  ASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - !ImportValue 'Dev-PrivateSubnet1ID'
+        - !ImportValue 'Dev-PrivateSubnet1ID'
+      MaxSize: '4'
+      MinSize: '0'
+      DesiredCapacity: '2'
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      TargetGroupARNs:
+        - !Ref TargetGroup
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateName: LaunchTemplate
+      VersionDescription: Initial version      
+      LaunchTemplateData:
+        ImageId: !Ref LatestAmiId
+        InstanceType: !Ref InstanceType
+        SecurityGroupIds:
+          - !ImportValue 'Dev-WebAppSecurityGroupID'
+        UserData:
+          Fn::Base64: |
+            #!/bin/bash
+            yum update -y
+            systemctl enable amazon-ssm-agent
+            systemctl start amazon-ssm-agent            
+            yum install -y httpd
+            systemctl start httpd
+            systemctl enable httpd
+            echo "Hello from Cloudformation on AWS!" > /var/www/html/index.html
+        IamInstanceProfile:
+          Arn: !ImportValue Dev-SSMInstanceProfile
+
+  ASGSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: !Ref OperatorEMail
+        Protocol: email
+
+  ScalingOutPolicy:
+    Type: "AWS::AutoScaling::ScalingPolicy"
+    Properties:
+      AutoScalingGroupName: !Ref ASG
+      PolicyType: "SimpleScaling"
+      AdjustmentType: "ChangeInCapacity"
+      ScalingAdjustment: 1   
+      Cooldown: 30
+
+  ScalingInPolicy:
+    Type: "AWS::AutoScaling::ScalingPolicy"
+    Properties:
+      AutoScalingGroupName: !Ref ASG
+      PolicyType: "SimpleScaling"
+      AdjustmentType: "ChangeInCapacity"
+      ScalingAdjustment: -1   
+      Cooldown: 30
+    
+  CPUScaleOutPolicyAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: "CpuUtilizationAlarm"
+      ComparisonOperator: "GreaterThanThreshold"
+      EvaluationPeriods: 2
+      MetricName: "HighCPUUtilization"
+      Namespace: "AWS/EC2"
+      Period: 30
+      Statistic: "Average"
+      Threshold: 40
+      AlarmActions:
+        - !Ref ScalingOutPolicy
+  
+  CPUScaleInPolicyAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: "LowCpuUtilizationAlarm"
+      ComparisonOperator: "LessThanOrEqualToThreshold"
+      EvaluationPeriods: 2
+      MetricName: "LowCPUUtilization"
+      Namespace: "AWS/EC2"
+      Period: 30
+      Statistic: "Average"
+      Threshold: 40
+      AlarmActions:
+        - !Ref ScalingInPolicy
+Outputs:
+  LoadBalancerDNSName:
+    Description: DNS name of the Application Load Balancer
+    Value: !Ref LoadBalancer
+    Export:
+      Name: !Sub "${EnvironmentName}-LoadBalancerDNSName"
