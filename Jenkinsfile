@@ -2,9 +2,9 @@ pipeline {
   agent any
 
   environment {
-    // Credentials section
-    AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    // // Credentials section
+    // AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+    // AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
 
     // Stack names section
     NETWORK_STACK_NAME = 'Dev-network-stack'
@@ -28,7 +28,7 @@ pipeline {
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
           accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          credentials: 'admin',
+          credentialId: 'admin',
           secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
         ]]) {
           script {
