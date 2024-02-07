@@ -17,6 +17,9 @@ pipeline {
     SSM_TEMPLATE_FILE = 'CloudNet-Project-CFN/ssm.yaml'
     WEBAPP_TEMPLATE_FILE = 'CloudNet-Project-CFN/webapp.yaml'
     DATABASE_TEMPLATE_FILE = 'CloudNet-Project-CFN/DB.yaml'
+
+    // AWS default region
+    AWS_DEFAULT_REGION = 'us-east-1'
   }
 
   stages {
