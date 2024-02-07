@@ -17,8 +17,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
+              Services:
                 - ec2.amazonaws.com
+                - cloudformation.amazonaws.com
             Action:
               - sts:AssumeRole
       Path: /
