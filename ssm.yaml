@@ -80,7 +80,7 @@ Resources:
   EC2InstanceAttachment:
     Type: AWS::IAM::InstanceProfileAssociation
     Properties:
-      InstanceId: !GetAtt MyEC2Instance.InstanceId  # Replace with your instance identifier
+      # InstanceId: !GetAtt MyEC2Instance.InstanceId  # Replace with your instance identifier
       InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
