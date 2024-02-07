@@ -52,27 +52,24 @@ Resources:
 
   # Define policy with restricted permissions and reference dedicated role
   Policies:
-    Type: AWS::IAM::Policy
+    Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: AllowCreateSpecificRoles
-      Roles:
-        - !Ref SSMInstanceAccessRole
+      PolicyName: CFNUsers
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
-            Action: "*"
-              # - iam:CreateRole
-              # - iam:CreatePolicy
-              # - iam:AttachRolePolicy
-              # - iam:PutRolePolicy
-              # - iam:AttachRolePolicy
-              # - iam:DetachRolePolicy
-            Resource: "*"
-            Condition:
-              ArnNotEquals:
-                iam:PolicyArn:
-                  - 'arn:aws:iam::aws:policy/AdministratorAccess'
+            Action:
+              - 'cloudformation:Describe*'
+              - 'cloudformation:List*'
+              - 'cloudformation:Get*'
+            Resource: '*'
+      Role:
+        !Ref SSMInstanceAccessRole
+            # Condition:
+            #   ArnNotEquals:
+            #     iam:PolicyArn:
+            #       - 'arn:aws:iam::aws:policy/AdministratorAccess'
             # !Sub "arn:${AWS::Partition}:iam::*:role/Dev-*"
           # - Effect: Allow
           #   Action:
