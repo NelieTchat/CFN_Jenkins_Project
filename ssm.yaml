@@ -1,82 +1,36 @@
 AWSTemplateFormatVersion: '2010-09-09'
-
 Description: Provides Session Manager access without an Internet Gateway to an existing instance in a private subnet.
-
 Parameters:
+  # Optional environment type
   EnvName:
     Type: String
     Description: 'The Environment type'
     Default: Dev
 
 Resources:
+  SSMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:  
+        - !Ref SSMInstanceSSMRole
+
   SSMInstanceSSMRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Principal:
-              Services:
-                - ec2.amazonaws.com
-                - cloudformation.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: /
-      ManagedPolicyArns:
-        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
-
-  SSMInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles:
-        - !Ref SSMInstanceSSMRole
-
-  # Create a dedicated role for users/groups with specific permissions
-  SSMInstanceAccessRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Principal:
               Service:
-                - iam.amazonaws.com
+                - ec2.amazonaws.com
             Action:
               - sts:AssumeRole
       Path: /
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
-
-  # Define policy with restricted permissions and reference dedicated role
-  Policies:
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: CFNUsers
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'cloudformation:Describe*'
-              - 'cloudformation:List*'
-              - 'cloudformation:Get*'
-            Resource: '*'
-      Roles:
-        - !Ref SSMInstanceAccessRole
-            # Condition:
-            #   ArnNotEquals:
-            #     iam:PolicyArn:
-            #       - 'arn:aws:iam::aws:policy/AdministratorAccess'
-            # !Sub "arn:${AWS::Partition}:iam::*:role/Dev-*"
-          # - Effect: Allow
-          #   Action:
-          #     - iam:DetachRolePolicy
-          #   Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-
-
 
 Outputs:
   SSMInstanceSSMRoleARN:
@@ -84,7 +38,7 @@ Outputs:
     Value: !Ref SSMInstanceSSMRole
     Export:
       Name: !Sub "${EnvName}-SSMRoleARN"
-
+  
   SSMInstanceProfile:
     Description: 'The ARN of the Instance Profile'
     Value: !GetAtt SSMInstanceProfile.Arn
