@@ -68,7 +68,7 @@ Resources:
               - iam:PutRolePolicy
               - iam:AttachRolePolicy
               - iam:DetachRolePolicy
-            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/Dev-*"
           # - Effect: Allow
           #   Action:
           #     - iam:DetachRolePolicy
