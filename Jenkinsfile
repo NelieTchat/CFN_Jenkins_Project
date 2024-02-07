@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        AWS_ACCESS_KEY_ID     = credentials(AKIATNTT4OJUN4BPKS45)
+        AWS_SECRET_ACCESS_KEY = credentials(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)
         // Stack names section
         NETWORK_STACK_NAME = 'Dev-network-stack'
         SSM_STACK_NAME = 'Dev-ssm-role'
@@ -19,10 +21,16 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git credentialsId: 'AdminNel', url: 'https://github.com/NelieTchat/CFN_Jenkins_Project.git'
+                }
+            }
+        }
         stage('Deploy') {
             steps {
-                // withCredentials([usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY']) {
-                    // Deploy Network Stack
+
                     sh """
                         aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} \
                         --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}
