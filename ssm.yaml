@@ -66,11 +66,13 @@ Resources:
               - iam:CreatePolicy
               - iam:AttachRolePolicy
               - iam:PutRolePolicy
-            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-          - Effect: Allow
-            Action:
+              - iam:AttachRolePolicy
               - iam:DetachRolePolicy
             Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+          # - Effect: Allow
+          #   Action:
+          #     - iam:DetachRolePolicy
+          #   Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
 
 
 
