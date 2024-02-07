@@ -51,7 +51,7 @@ Resources:
 
   # Define policy with restricted permissions and reference dedicated role
   Policies:
-    Type: AWS::IAM::ManagedPolicy
+    Type: AWS::IAM::Role
     Properties:
       Description: AllowCreateSpecificRole
       PolicyDocument:
@@ -62,18 +62,13 @@ Resources:
             - iam:CreateRole
             - iam:CreatePolicy
             - iam:AttachRolePolicy
-            - iam:PassRole
+            - iam:PutRolePolicy
           Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-          # Condition:
-          #   StringLike:
-          # Role: !Ref SSMInstanceAccessRole
         - Effect: Allow  # Add a comma here
           Action:
             - iam:DetachRolePolicy
           Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-          # Condition:
-          #   StringLike:
-          # Role: !Ref SSMInstanceAccessRole
+
 
 
 
