@@ -24,6 +24,8 @@ pipeline {
                 // withCredentials([usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY']) {
                     // Deploy Network Stack
                     sh """
+                        pwd
+                        ls
                         aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} \
                         --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}
                     """
