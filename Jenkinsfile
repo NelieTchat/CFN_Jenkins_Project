@@ -26,10 +26,10 @@ pipeline {
     stage('Deploy') {
       steps {
         withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          credentialId: 'admin',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+            $class: 'AmazonWebServicesCredentialsBinding',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            credentialId: 'admin',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
         ]]) {
           script {
             // Deploy Network Stack
