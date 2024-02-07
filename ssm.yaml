@@ -61,14 +61,19 @@ Resources:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Action:
-              - iam:CreateRole
-              - iam:CreatePolicy
-              - iam:AttachRolePolicy
-              - iam:PutRolePolicy
-              - iam:AttachRolePolicy
-              - iam:DetachRolePolicy
-            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/Dev-*"
+            Action: "*"
+              # - iam:CreateRole
+              # - iam:CreatePolicy
+              # - iam:AttachRolePolicy
+              # - iam:PutRolePolicy
+              # - iam:AttachRolePolicy
+              # - iam:DetachRolePolicy
+            Resource: "*"
+            Condition:
+              ArnNotEquals:
+                iam:PolicyArn:
+                  - 'arn:aws:iam::aws:policy/AdministratorAccess'
+            # !Sub "arn:${AWS::Partition}:iam::*:role/Dev-*"
           # - Effect: Allow
           #   Action:
           #     - iam:DetachRolePolicy
