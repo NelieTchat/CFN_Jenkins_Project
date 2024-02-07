@@ -64,8 +64,8 @@ Resources:
               - 'cloudformation:List*'
               - 'cloudformation:Get*'
             Resource: '*'
-      Role:
-        !Ref SSMInstanceAccessRole
+      Roles:
+        - !Ref SSMInstanceAccessRole
             # Condition:
             #   ArnNotEquals:
             #     iam:PolicyArn:
