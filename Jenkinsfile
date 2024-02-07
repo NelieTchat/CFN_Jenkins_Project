@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID = credentials('AdminNel')
         // Stack names section
         NETWORK_STACK_NAME = 'Dev-network-stack'
         SSM_STACK_NAME = 'Dev-ssm-role'
@@ -22,12 +21,12 @@ pipeline {
     stages {
         stage('Deploy') {
             steps {
-                // Deploy Network Stack
-                sh """
-                AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} \
-                --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}
-                """
+                withCredentials([usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY']) {
+                    // Deploy Network Stack
+                    sh """
+                        aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} \
+                        --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}
+                    """
 
                     // Add similar commands for other stacks, uncommenting and adding `--depends-on` as needed
                     // sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
@@ -37,3 +36,4 @@ pipeline {
             }
         }
     }
+}
