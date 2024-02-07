@@ -31,7 +31,7 @@ pipeline {
                     // """
 
                     
-                    sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
+                    sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
                     // sh "aws cloudformation deploy --template-file ${WEBAPP_TEMPLATE_FILE} --stack-name ${WEBAPP_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
                     // sh "aws cloudformation deploy --template-file ${DATABASE_TEMPLATE_FILE} --stack-name ${DATABASE_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
                 }

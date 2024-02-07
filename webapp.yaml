@@ -72,7 +72,7 @@ Resources:
     Properties:
       VPCZoneIdentifier:
         - !ImportValue 'Dev-PrivateSubnet1ID'
-        - !ImportValue 'Dev-PrivateSubnet1ID'
+        - !ImportValue 'Dev-PrivateSubnet2ID'
       MaxSize: '4'
       MinSize: '0'
       DesiredCapacity: '2'
