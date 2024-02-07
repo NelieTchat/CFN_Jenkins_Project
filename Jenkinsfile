@@ -2,9 +2,6 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID     = AKIATNTT4OJUN4BPKS45
-        AWS_SECRET_ACCESS_KEY = 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
-        // Stack names section
         NETWORK_STACK_NAME = 'Dev-network-stack'
         SSM_STACK_NAME = 'Dev-ssm-role'
         WEBAPP_STACK_NAME = 'Dev-webapp-stack'
