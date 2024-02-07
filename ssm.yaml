@@ -51,35 +51,28 @@ Resources:
 
   # Define policy with restricted permissions and reference dedicated role
   Policies:
-    Type: AWS::IAM::Role
+    Type: AWS::IAM::Policy
     Properties:
-      Description: AllowCreateSpecificRole
+      PolicyName: AllowCreateSpecificRoles
+      # Description: Allows creation of roles with specific names prefixed with 'Dev-'
+      Roles:
+        - !Ref SSMInstanceAccessRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-        - Effect: Allow
-          Action:
-            - iam:CreateRole
-            - iam:CreatePolicy
-            - iam:AttachRolePolicy
-            - iam:PutRolePolicy
-          Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-        - Effect: Allow  # Add a comma here
-          Action:
-            - iam:DetachRolePolicy
-          Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+          - Effect: Allow
+            Action:
+              - iam:CreateRole
+              - iam:CreatePolicy
+              - iam:AttachRolePolicy
+              - iam:PutRolePolicy
+            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+          - Effect: Allow
+            Action:
+              - iam:DetachRolePolicy
+            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
 
 
-
-
-  # Attach profile to specific EC2 instances (replace with your logic)
-    # EC2InstanceAttachment:
-    #   Type: AWS::IAM::InstanceProfileAssociation
-    #   Properties:
-    #     Filters:
-    #       - Name: tag:Name
-    #         Values: "Dev-EC2Attachment" # Replace with your actual tags
-    #     InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
   SSMInstanceSSMRoleARN:
