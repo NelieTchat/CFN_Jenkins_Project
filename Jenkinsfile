@@ -9,10 +9,10 @@ pipeline {
         DATABASE_STACK_NAME = 'Dev-database-stack'
 
         // Template paths section
-        NETWORK_TEMPLATE_FILE = 'CloudNet-Project-CFN/network.yaml'
-        SSM_TEMPLATE_FILE = 'CloudNet-Project-CFN/ssm.yaml'
-        WEBAPP_TEMPLATE_FILE = 'CloudNet-Project-CFN/webapp.yaml'
-        DATABASE_TEMPLATE_FILE = 'CloudNet-Project-CFN/DB.yaml'
+        NETWORK_TEMPLATE_FILE = 'network.yaml'
+        SSM_TEMPLATE_FILE = 'ssm.yaml'
+        WEBAPP_TEMPLATE_FILE = 'webapp.yaml'
+        DATABASE_TEMPLATE_FILE = 'DB.yaml'
 
         // AWS default region
         AWS_DEFAULT_REGION = 'us-east-1'
