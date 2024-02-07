@@ -9,27 +9,6 @@ Parameters:
     Default: Dev
 
 Resources:
-  Policies:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: AllowCreateSpecificRole
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: 'Allow'
-            Action: 'iam:CreateRole'
-            Resource: '*'
-            Users: 'AdminNel'
-            Groups: 'DevOpsEngineer'
-            Roles: !Ref SSMInstanceSSMRole
-
-  SSMInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles:
-        - !Ref SSMInstanceSSMRole
-
   SSMInstanceSSMRole:
     Type: AWS::IAM::Role
     Properties:
@@ -45,6 +24,64 @@ Resources:
       Path: /
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  SSMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref SSMInstanceSSMRole
+
+  # Create a dedicated role for users/groups with specific permissions
+  SSMInstanceAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - iam.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  # Define policy with restricted permissions and reference dedicated role
+  Policies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AllowCreateSpecificRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - iam:CreateRole
+            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+            Condition:
+              StringLike:
+                aws:PrincipalTag/Role: ${EnvName}-AdminNel
+                # OR
+                aws:PrincipalTag/Role: ${EnvName}-DevOpsEngineer
+          - Effect: Allow
+            Action:
+              - iam:DetachRolePolicy
+            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+            Condition:
+              StringLike:
+                aws:PrincipalTag/Role: ${EnvName}-AdminNel
+                # OR
+                aws:PrincipalTag/Role: ${EnvName}-DevOpsEngineer
+
+  # Attach profile to specific EC2 instances (replace with your logic)
+  EC2InstanceAttachment:
+    Type: AWS::IAM::InstanceProfileAssociation
+    Properties:
+      InstanceId: !GetAtt MyEC2Instance.InstanceId  # Replace with your instance identifier
+      InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
   SSMInstanceSSMRoleARN:
