@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        AWS_ACCESS_KEY_ID = credentials('AdminNel')
         // Stack names section
         NETWORK_STACK_NAME = 'Dev-network-stack'
         SSM_STACK_NAME = 'Dev-ssm-role'
