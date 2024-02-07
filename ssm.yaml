@@ -61,6 +61,8 @@ Resources:
           Action:
             - iam:CreateRole
             - iam:CreatePolicy
+            - iam:AttachRolePolicy
+            - iam:PassRole
           Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
           # Condition:
           #   StringLike:
