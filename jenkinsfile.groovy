@@ -1,58 +1,42 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        // Stage 1: Linting CloudFormation templates
-        stage('Linting') {
-            steps {
-                script {
-                    sh 'cfn-lint --include-nested CloudNet-Project-CFN/DB.yaml CloudNet-Project-CFN/network.yaml CloudNet-Project-CFN/webapp.yaml CloudNet-Project-CFN/ssm.yaml'
-                }
-            }
+  environment {
+    // Credentials section
+    AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+
+    // Stack names section
+    NETWORK_STACK_NAME = 'Dev-network-stack'
+    SSM_STACK_NAME = 'Dev-ssm-role'
+    WEBAPP_STACK_NAME = 'Dev-webapp-stack'
+    DATABASE_STACK_NAME = 'Dev-database-stack'
+
+    // Template paths section
+    NETWORK_TEMPLATE_FILE = 'CloudNet-Project-CFN/network.yaml'
+    SSM_TEMPLATE_FILE = 'CloudNet-Project-CFN/ssm.yaml'
+    WEBAPP_TEMPLATE_FILE = 'CloudNet-Project-CFN/webapp.yaml'
+    DATABASE_TEMPLATE_FILE = 'CloudNet-Project-CFN/DB.yaml'
+  }
+
+  stages {
+    stage('Deploy') {
+      steps {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+          credentials: 'admin',
+          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        ]]) {
+          script {
+            // Deploy Network Stack
+            sh "aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
+
+            // Add similar commands for other stacks, uncommenting and adding `--depends-on` as needed
+            // ...
+          }
         }
-
-        // Stage 2: Packaging CloudFormation template
-        stage('Building Stack') {
-            steps {
-                script {
-                    def s3BucketName = 'nel-read-buck' // Replace with your actual S3 bucket name
-
-                    // Clean existing workspace
-                    deleteDir()
-
-                    // Package CloudFormation template
-                    sh "aws cloudformation package --template-file CloudNet-Project-CFN/cloudformation.yaml --output-template-file packaged-template.yaml --nel-read-buck"
-                }
-            }
-        }
-
-        // Stage 3: Deploying CloudFormation stack
-        stage('Deploying Stack') {
-            steps {
-                script {
-                    // Add your deployment steps using AWS CLI or SDK
-                    // Example: sh "aws cloudformation deploy --template-file packaged-template.yaml --stack-name my-stack-name"
-                }
-            }
-        }
-
-        // Stage 4: Cleanup (optional)
-        stage('Cleanup') {
-            steps {
-                script {
-                    // Add your cleanup steps here if needed
-                }
-            }
-        }
+      }
     }
-
-    // Post-pipeline actions
-    post {
-        always {
-            echo 'This will always execute after the pipeline completes.'
-        }
-        failure {
-            echo 'Oh no! An error occurred during deployment. Please check the logs for details.'
-        }
-    }
+  }
 }
