@@ -57,33 +57,30 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Action:
-              - iam:CreateRole
-            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-            Condition:
-              StringLike:
-                aws:PrincipalTag/Role: ${EnvName}-AdminNel
-                # OR
-                aws:PrincipalTag/Role: ${EnvName}-DevOpsEngineer
-          - Effect: Allow
-            Action:
-              - iam:DetachRolePolicy
-            Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-            Condition:
-              StringLike:
-                aws:PrincipalTag/Role: ${EnvName}-AdminNel
-                # OR
-                aws:PrincipalTag/Role: ${EnvName}-DevOpsEngineer
+        - Effect: Allow
+          Action:
+            - iam:CreateRole
+          Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+          Condition:
+            StringLike:
+              Role: !Sub '${EnvName}-AdminNel'
+        - Effect: Allow  # Add a comma here
+          Action:
+            - iam:DetachRolePolicy
+          Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
+          Condition:
+            StringLike:
+              Role: !Sub '${EnvName}-AdminNel'
+
 
   # Attach profile to specific EC2 instances (replace with your logic)
-  EC2InstanceAttachment:
-  Type: AWS::IAM::InstanceProfileAssociation
-  Properties:
-    Filters:
-      - Name: tag:Name
-        Value: "Dev-EC2Attachment" # Replace with your actual tags
-    InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
+    # EC2InstanceAttachment:
+    #   Type: AWS::IAM::InstanceProfileAssociation
+    #   Properties:
+    #     Filters:
+    #       - Name: tag:Name
+    #         Values: "Dev-EC2Attachment" # Replace with your actual tags
+    #     InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
   SSMInstanceSSMRoleARN:
