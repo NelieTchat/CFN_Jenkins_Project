@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
 Description: Provides Session Manager access without an Internet Gateway to an existing instance in a private subnet.
+
 Parameters:
-  # Optional environment type
   EnvName:
     Type: String
     Description: 'The Environment type'
@@ -9,19 +10,21 @@ Parameters:
 
 Resources:
   Policies:
-  - PolicyName: AllowCreateSpecificRole
-    PolicyDocument:
-      Version: '2012-10-17'
-      Statement:
-        - Effect: Allow
-          Action: iam:CreateRole
-          Resource: "arn:aws:iam::235392496232:role/*"
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AllowCreateSpecificRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: iam:CreateRole
+            Resource: "arn:aws:iam::235392496232:role/*"
 
   SSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
-      Roles:  
+      Roles:
         - !Ref SSMInstanceSSMRole
 
   SSMInstanceSSMRole:
@@ -30,8 +33,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal:
               Service:
                 - ec2.amazonaws.com
@@ -42,37 +44,14 @@ Resources:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
 
 Outputs:
-
   SSMInstanceSSMRoleARN:
     Description: 'The ARN of the SSM Role'
     Value: !Ref SSMInstanceSSMRole
     Export:
       Name: !Sub "${EnvName}-SSMRoleARN"
-  
+
   SSMInstanceProfile:
     Description: 'The ARN of the Instance Profile'
     Value: !GetAtt SSMInstanceProfile.Arn
     Export:
       Name: !Sub "${EnvName}-SSMInstanceProfile"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
