@@ -78,10 +78,14 @@ Resources:
 
   # Attach profile to specific EC2 instances (replace with your logic)
   EC2InstanceAttachment:
-    Type: AWS::IAM::InstanceProfileAssociation
-    Properties:
-      # InstanceId: !GetAtt MyEC2Instance.InstanceId  # Replace with your instance identifier
-      InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
+  Type: AWS::IAM::InstanceProfileAssociation
+  Properties:
+    Filters:
+      - Name: tag:Name
+        Values: ["MyInstance-Prod", "MyInstance-Dev"]  # Replace with your actual tags
+      - Name: tag:Environment
+        Values: ["Production"]  # Optional, add an environment filter if needed
+    InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
   SSMInstanceSSMRoleARN:
