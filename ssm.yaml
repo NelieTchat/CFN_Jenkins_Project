@@ -1,60 +1,60 @@
-# AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: '2010-09-09'
 
-# Description: Provides Session Manager access without an Internet Gateway to an existing instance in a private subnet.
+Description: Provides Session Manager access without an Internet Gateway to an existing instance in a private subnet.
 
-# Parameters:
-#   EnvName:
-#     Type: String
-#     Description: 'The Environment type'
-#     Default: Dev
+Parameters:
+  EnvName:
+    Type: String
+    Description: 'The Environment type'
+    Default: Dev
 
-# Resources:
-#   Policies:
-#     Type: AWS::IAM::Policy
-#     Properties:
-#       PolicyName: AllowCreateSpecificRole
-#       PolicyDocument:
-#         Version: '2012-10-17'
-#         Statement:
-#           - Effect: Allow
-#             Action: iam:CreateRole
-#             Resource: "arn:aws:iam::235392496232:role/*"
-#             Users: 'AdminNel'
-#             Groups: 'DevOpsEngineer'
-#             Roles: !Ref SSMInstanceSSMRole
+Resources:
+  Policies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AllowCreateSpecificRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: iam:CreateRole
+            Resource: "arn:aws:iam::235392496232:role/*"
+            Users: 'AdminNel'
+            Groups: 'DevOpsEngineer'
+            Roles: !Ref SSMInstanceSSMRole
 
-#   SSMInstanceProfile:
-#     Type: AWS::IAM::InstanceProfile
-#     Properties:
-#       Path: /
-#       Roles:
-#         - !Ref SSMInstanceSSMRole
+  SSMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref SSMInstanceSSMRole
 
-#   SSMInstanceSSMRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       AssumeRolePolicyDocument:
-#         Version: '2012-10-17'
-#         Statement:
-#           - Effect: Allow
-#             Principal:
-#               Service:
-#                 - ec2.amazonaws.com
-#             Action:
-#               - sts:AssumeRole
-#       Path: /
-#       ManagedPolicyArns:
-#         - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+  SSMInstanceSSMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
 
-# Outputs:
-#   SSMInstanceSSMRoleARN:
-#     Description: 'The ARN of the SSM Role'
-#     Value: !Ref SSMInstanceSSMRole
-#     Export:
-#       Name: !Sub "${EnvName}-SSMRoleARN"
+Outputs:
+  SSMInstanceSSMRoleARN:
+    Description: 'The ARN of the SSM Role'
+    Value: !Ref SSMInstanceSSMRole
+    Export:
+      Name: !Sub "${EnvName}-SSMRoleARN"
 
-#   SSMInstanceProfile:
-#     Description: 'The ARN of the Instance Profile'
-#     Value: !GetAtt SSMInstanceProfile.Arn
-#     Export:
-#       Name: !Sub "${EnvName}-SSMInstanceProfile"
+  SSMInstanceProfile:
+    Description: 'The ARN of the Instance Profile'
+    Value: !GetAtt SSMInstanceProfile.Arn
+    Export:
+      Name: !Sub "${EnvName}-SSMInstanceProfile"
