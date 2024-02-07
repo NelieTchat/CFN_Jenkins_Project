@@ -28,7 +28,7 @@ pipeline {
         withCredentials([[
             $class: 'AmazonWebServicesCredentialsBinding',
             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-            credentialId: '85456662-830b-4843-bf7e-731f35f18717',
+            credentialId: 'AdminNel',
             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
           script {
             // Deploy Network Stack
