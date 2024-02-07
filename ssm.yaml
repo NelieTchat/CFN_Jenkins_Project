@@ -51,9 +51,9 @@ Resources:
 
   # Define policy with restricted permissions and reference dedicated role
   Policies:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: AllowCreateSpecificRole
+      Description: AllowCreateSpecificRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -61,16 +61,17 @@ Resources:
           Action:
             - iam:CreateRole
           Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-          Condition:
-            StringLike:
-              Role: !Sub '${EnvName}-AdminNel'
+          # Condition:
+          #   StringLike:
+          # Role: !Ref SSMInstanceAccessRole
         - Effect: Allow  # Add a comma here
           Action:
             - iam:DetachRolePolicy
           Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${EnvName}-*"
-          Condition:
-            StringLike:
-              Role: !Sub '${EnvName}-AdminNel'
+          # Condition:
+          #   StringLike:
+          # Role: !Ref SSMInstanceAccessRole
+
 
 
   # Attach profile to specific EC2 instances (replace with your logic)
