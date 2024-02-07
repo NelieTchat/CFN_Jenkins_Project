@@ -29,8 +29,7 @@ pipeline {
             $class: 'AmazonWebServicesCredentialsBinding',
             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
             credentialId: 'admin',
-            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
           script {
             // Deploy Network Stack
             sh "aws cloudformation deploy --template-file ${NETWORK_TEMPLATE_FILE} --stack-name ${NETWORK_STACK_NAME} --region ${AWS_DEFAULT_REGION}"
