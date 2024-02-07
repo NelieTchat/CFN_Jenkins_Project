@@ -55,7 +55,6 @@ Resources:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: AllowCreateSpecificRoles
-      # Description: Allows creation of roles with specific names prefixed with 'Dev-'
       Roles:
         - !Ref SSMInstanceAccessRole
       PolicyDocument:
