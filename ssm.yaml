@@ -82,9 +82,7 @@ Resources:
   Properties:
     Filters:
       - Name: tag:Name
-        Values: ["MyInstance-Prod", "MyInstance-Dev"]  # Replace with your actual tags
-      - Name: tag:Environment
-        Values: ["Production"]  # Optional, add an environment filter if needed
+        Value: "Dev-EC2Attachment" # Replace with your actual tags
     InstanceProfileName: !GetAtt SSMInstanceProfile.Arn
 
 Outputs:
