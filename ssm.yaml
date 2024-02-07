@@ -16,9 +16,9 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Action: iam:CreateRole
-            Resource: "arn:aws:iam::235392496232:role/*"
+          - Effect: 'Allow'
+            Action: 'iam:CreateRole'
+            Resource: '*'
             Users: 'AdminNel'
             Groups: 'DevOpsEngineer'
             Roles: !Ref SSMInstanceSSMRole
