@@ -22,7 +22,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 // withCredentials([usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY']) {
-                    Deploy Network Stack
+                    // Deploy Network Stack
                     sh """
                         pwd
                         ls
