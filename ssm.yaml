@@ -19,6 +19,9 @@ Resources:
           - Effect: Allow
             Action: iam:CreateRole
             Resource: "arn:aws:iam::235392496232:role/*"
+            Users: 'AdminNel'
+            Groups: 'DevOpsEngineer'
+            Roles: !Ref SSMInstanceSSMRole
 
   SSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
