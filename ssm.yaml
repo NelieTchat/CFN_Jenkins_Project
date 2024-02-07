@@ -8,6 +8,15 @@ Parameters:
     Default: Dev
 
 Resources:
+  Policies:
+  - PolicyName: AllowCreateSpecificRole
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Action: iam:CreateRole
+          Resource: "arn:aws:iam::235392496232:role/*"
+
   SSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -33,6 +42,7 @@ Resources:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
 
 Outputs:
+
   SSMInstanceSSMRoleARN:
     Description: 'The ARN of the SSM Role'
     Value: !Ref SSMInstanceSSMRole
