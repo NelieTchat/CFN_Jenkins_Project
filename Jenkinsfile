@@ -73,17 +73,17 @@ pipeline {
         stage('Deploy webapp') {
             steps {
                 script {
-                    def operatorEmail = params.OperatorEMail
+                    // def operatorEmail = params.OperatorEMail
 
-                    // Validate if the email is not empty or null
-                    if (!operatorEmail || operatorEmail.trim() == '') {
-                        error 'OperatorEMail parameter must have a valid value.'
-                    }
+                    // // Validate if the email is not empty or null
+                    // if (!operatorEmail || operatorEmail.trim() == '') {
+                    //     error 'OperatorEMail parameter must have a valid value.'
+                    // }
 
-                    // Your deployment logic here, using the operatorEmail variable
-                    echo "Deploying with OperatorEMail: ${params.OperatorEMail}"
-                    echo "Params: [OperatorEMail:${params.OperatorEMail}]"
-                    echo "OperatorEMail: ${params.OperatorEMail}"
+                    // // Your deployment logic here, using the operatorEmail variable
+                    // echo "Deploying with OperatorEMail: ${params.OperatorEMail}"
+                    // echo "Params: [OperatorEMail:${params.OperatorEMail}]"
+                    // echo "OperatorEMail: ${params.OperatorEMail}"
 
                     withCredentials([
                         [
