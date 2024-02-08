@@ -69,6 +69,10 @@ pipeline {
         stage('Deploy webapp') {
             steps {
                 script {
+                    def parameters = [
+                        "OperatorEMail='${OPERATOR_EMAIL}"
+                    ].join(' ')
+
                     withCredentials([
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
@@ -82,7 +86,7 @@ pipeline {
                             --template-file webapp.yaml \\
                             --stack-name Dev-webapp-stack \\
                             --region ${AWS_DEFAULT_REGION} 
-                            --parameter-overrides OperatorEMail='tchanela@gmail.com'
+                            --parameter-overrides ${parameters}
 
                         """
                     }
