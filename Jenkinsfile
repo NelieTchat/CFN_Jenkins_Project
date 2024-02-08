@@ -2,12 +2,14 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1'
-        ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess' // Consider a more restrictive policy
         NETWORK_STACK_NAME = 'Dev-network-stack'
         NETWORK_TEMPLATE_FILE = 'network.yaml'
         SSM_STACK_NAME = 'Dev-ssm-stack'
         SSM_TEMPLATE_FILE = 'ssm.yaml'
+        AWS_DEFAULT_REGION = 'us-east-1'
+        ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess'
+        AWS_ACCESS_KEY_ID = credentials('admin-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('admin-secret-access-key')
     }
 
     stages {
@@ -34,21 +36,16 @@ pipeline {
         //     }
         // }
 
+    stages {
         stage('Deploy SSM') {
             steps {
                 script {
-                    // Use environment variables if available
-                    def region = env.AWS_DEFAULT_REGION ?: 'us-east-1' // Set a default if not defined
-
-                    withIamCredentials(roleArn: ROLE_ARN) {
-                        sh """
-                            aws cloudformation deploy \
-                                --template-file ${SSM_TEMPLATE_FILE} \
-                                --stack-name ${SSM_STACK_NAME} \
-                                --region ${region} \
-                                --capabilities CAPABILITY_IAM
-                        """
-                    }
+                    sh """
+                        aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                        aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                        aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM
+                    """
+                    // Additional steps if needed
                 }
             }
         }
