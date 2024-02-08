@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'OperatorEMail', description: 'Email address of the operator', defaultValue: 'tchanela@gmail.com')
+    }
+
     environment {
         NETWORK_STACK_NAME = 'Dev-network-stack'
         SSM_STACK_NAME = 'Dev-ssm-stack'
@@ -69,16 +73,16 @@ pipeline {
         stage('Deploy webapp') {
             steps {
                 script {
-                    if (isProductionEnvironment()) {
-                        withEnv {
-                            OPERATOR_EMAIL = 'tchanela@gmail.com' // Replace with your actual email
-                        }
+                    def operatorEmail = params.OperatorEMail
+
+                    // Validate if the email is not empty or null
+                    if (!operatorEmail || operatorEmail.trim() == '') {
+                        error 'OperatorEMail parameter must have a valid value.'
                     }
 
-                    def parameters = [
-                        "OPERATOR_EMAIL='${OPERATOR_EMAIL}'"
-                    ].join(' ')
-
+                    // Your deployment logic here, using the operatorEmail variable
+                    echo "Deploying with OperatorEMail: ${operatorEmail}"
+                    
                     withCredentials([
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
