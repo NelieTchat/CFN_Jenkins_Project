@@ -36,7 +36,6 @@ pipeline {
         //     }
         // }
 
-    stages {
         stage('Deploy SSM') {
             steps {
                 script {
