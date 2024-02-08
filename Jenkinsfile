@@ -65,21 +65,33 @@ pipeline {
 //     }
 // }
 
-        stage('Deploy webapp') {
+//         stage('Deploy webapp') {
+//             steps {
+//                 script {
+//                     withCredentials([
+//                         [
+//                             $class: 'AmazonWebServicesCredentialsBinding',
+//                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+//                             credentialsId: 'AdminNel'
+//                         ]
+//                     ]) {
+//                         sh """
+//                             aws cloudformation deploy \\
+//                             --template-file webapp.yaml \\
+//                             --stack-name Dev-webapp-stack \\
+//                             --region ${AWS_DEFAULT_REGION} 
+
+//                         """
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+        stage('Deploy database') {
             steps {
                 script {
-                    // def operatorEmail = params.OperatorEMail
-
-                    // // Validate if the email is not empty or null
-                    // if (!operatorEmail || operatorEmail.trim() == '') {
-                    //     error 'OperatorEMail parameter must have a valid value.'
-                    // }
-
-                    // // Your deployment logic here, using the operatorEmail variable
-                    // echo "Deploying with OperatorEMail: ${params.OperatorEMail}"
-                    // echo "Params: [OperatorEMail:${params.OperatorEMail}]"
-                    // echo "OperatorEMail: ${params.OperatorEMail}"
-
                     withCredentials([
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
@@ -90,8 +102,8 @@ pipeline {
                     ]) {
                         sh """
                             aws cloudformation deploy \\
-                            --template-file webapp.yaml \\
-                            --stack-name Dev-webapp-stack \\
+                            --template-file DB.yaml \\
+                            --stack-name Dev-DB-stack \\
                             --region ${AWS_DEFAULT_REGION} 
 
                         """
