@@ -7,7 +7,7 @@ pipeline {
         SSM_STACK_NAME = 'Dev-ssm-stack'
         SSM_TEMPLATE_FILE = 'ssm.yaml'
         AWS_DEFAULT_REGION = 'us-east-1'
-        ROLE_ARN = arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+        ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess'
 
                     
     }
