@@ -26,7 +26,8 @@ pipeline {
                         --template-file ${NETWORK_TEMPLATE_FILE} \
                         --stack-name ${NETWORK_STACK_NAME} \
                         --region ${AWS_DEFAULT_REGION} \
-                        --role-arn arn:aws:${AWS::Partition}:iam::YOUR_ACCOUNT_ID:role/your-custom-role-name
+                        --role-arn arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+
                     """
 
                     
