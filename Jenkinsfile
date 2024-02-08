@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         NETWORK_STACK_NAME = 'Dev-network-stack'
+        NETWORK_TEMPLATE_FILE = 'network.yaml' 
         // ... (other environment variables)
         AWS_DEFAULT_REGION = 'us-east-1'
     }
