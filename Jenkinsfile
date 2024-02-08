@@ -12,40 +12,43 @@ pipeline {
         // AWS_SECRET_ACCESS_KEY = credentials('admin-secret-access-key')
     }
 
-    stage('Deploy Network') {
-        steps {
-            script {
-                sh """
-                    aws cloudformation deploy \\
-                    --template-file ${NETWORK_TEMPLATE_FILE} \\
-                    --stack-name ${NETWORK_STACK_NAME} \\
-                    --region ${AWS_DEFAULT_REGION} \\
-                    --role-arn arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
-                """
+    stages {
+        stage('Deploy Network') {
+            steps {
+                script {
+                    sh """
+                        aws cloudformation deploy \\
+                        --template-file ${NETWORK_TEMPLATE_FILE} \\
+                        --stack-name ${NETWORK_STACK_NAME} \\
+                        --region ${AWS_DEFAULT_REGION} \\
+                        --role-arn arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+                    """
+                }
             }
         }
+
+        // Uncomment the following section if needed
+        /*
+        stage('Deploy SSM') {
+            steps {
+                script {
+                    withCredentials([
+                        [
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+                            credentialsId: 'admin'
+                        ]
+                    ]) {
+                        sh """
+                            aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                            aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM
+                        """
+                    }
+                }
+            }
+        }
+        */
     }
-
-
-//         stage('Deploy SSM') {
-//             steps {
-//                 script {
-//                     withCredentials([
-//                         [
-//                             $class: 'AmazonWebServicesCredentialsBinding',
-//                             accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-//                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-//                             credentialsId: 'admin'
-//                         ]
-//                     ]) {
-//                         sh """
-//                             aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-//                             aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-//                             aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM
-//                         """
-//                     }
-//                 }
-//             }
-//         }
-//     }
 }
