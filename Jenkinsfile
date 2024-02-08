@@ -82,10 +82,8 @@ pipeline {
 
                     // Your deployment logic here, using the operatorEmail variable
                     echo "Deploying with OperatorEMail: ${params.OperatorEMail}"
-                    echo "Params: ${params}"
+                    echo "Params: [OperatorEMail:${params.OperatorEMail}]"
                     echo "OperatorEMail: ${params.OperatorEMail}"
-
-
 
                     withCredentials([
                         [
