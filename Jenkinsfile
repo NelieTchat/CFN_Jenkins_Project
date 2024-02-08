@@ -10,7 +10,32 @@ pipeline {
     }
 
     stages {
-        stage('Deploy Network') {
+    //     stage('Deploy Network') {
+    //         steps {
+    //             script {
+    //                 withCredentials([
+    //                     [
+    //                         $class: 'AmazonWebServicesCredentialsBinding',
+    //                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+    //                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+    //                         credentialsId: 'AdminNel'
+    //                     ]
+    //                 ]) {
+    //                     sh """
+    //                         aws cloudformation deploy \\
+    //                         --template-file ${NETWORK_TEMPLATE_FILE} \\
+    //                         --stack-name ${NETWORK_STACK_NAME} \\
+    //                         --region ${AWS_DEFAULT_REGION} \\
+    //                     """
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // Additional stages for your specific deployment process (e.g., testing, approvals)
+
+        stage('Deploy SSM') {
             steps {
                 script {
                     withCredentials([
@@ -23,15 +48,12 @@ pipeline {
                     ]) {
                         sh """
                             aws cloudformation deploy \\
-                            --template-file ${NETWORK_TEMPLATE_FILE} \\
-                            --stack-name ${NETWORK_STACK_NAME} \\
+                            --template-file ssm.yaml \\
+                            --stack-name Dev-ssm-stack \\
                             --region ${AWS_DEFAULT_REGION} \\
+                            --capabilities CAPABILITY_IAM
                         """
                     }
                 }
             }
         }
-    }
-
-    // Additional stages for your specific deployment process (e.g., testing, approvals)
-}
