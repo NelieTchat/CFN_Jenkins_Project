@@ -16,6 +16,15 @@ pipeline {
         stage('Deploy Network') {
             steps {
                 script {
+                    withCredentials([
+                        [
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+                            credentialsId: 'admin'
+                        ]
+                    ]) {
+                                        
                     sh """
                         aws cloudformation deploy \\
                         --template-file ${NETWORK_TEMPLATE_FILE} \\
@@ -27,25 +36,25 @@ pipeline {
             }
         }
 
-        stage('Deploy SSM') {
-            steps {
-                script {
-                    withCredentials([
-                        [
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-                            credentialsId: 'admin'
-                        ]
-                    ]) {
-                        sh """
-                            aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-                            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-                            aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM
-                        """
-                    }
-                }
-            }
-        }
+    //     stage('Deploy SSM') {
+    //         steps {
+    //             script {
+    //                 withCredentials([
+    //                     [
+    //                         $class: 'AmazonWebServicesCredentialsBinding',
+    //                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+    //                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+    //                         credentialsId: 'admin'
+    //                     ]
+    //                 ]) {
+    //                     sh """
+    //                         aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+    //                         aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+    //                         aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM
+    //                     """
+    //                 }
+    //             }
+    //         }
+    //     }
     }
 }
