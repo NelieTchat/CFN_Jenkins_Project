@@ -23,8 +23,7 @@ pipeline {
                             aws cloudformation deploy \
                             --template-file ${NETWORK_TEMPLATE_FILE} \
                             --stack-name ${NETWORK_STACK_NAME} \
-                            --region ${AWS_DEFAULT_REGION} \
-                            --role-arn arn:${AWS::Partition}:iam::aws:policy/service-role/AWSCloudFormationFullAccess
+                            --region ${AWS_DEFAULT_REGION}
                         """
                         // Additional steps if needed
                     }
