@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REGION = env.AWS_DEFAULT_REGION ?: 'us-east-1'
+        AWS_DEFAULT_REGION = 'us-east-1'
         ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess' // Consider a more restrictive policy
         NETWORK_STACK_NAME = 'Dev-network-stack'
         NETWORK_TEMPLATE_FILE = 'network.yaml'
