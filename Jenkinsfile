@@ -20,13 +20,18 @@ pipeline {
     stages {
         stage('Deploy') {
             steps {
-
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+                    credentialsId: 'admin'  // Replace with the ID of your AWS credentials
+                ]]) {
                     sh """
                         aws cloudformation deploy \
                         --template-file ${NETWORK_TEMPLATE_FILE} \
                         --stack-name ${NETWORK_STACK_NAME} \
                         --region ${AWS_DEFAULT_REGION} \
-                        --role-arn arn:\\\${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+                        --role-arn arn:\${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
                     """
 
 
@@ -38,3 +43,4 @@ pipeline {
             }
         }
     }
+}
