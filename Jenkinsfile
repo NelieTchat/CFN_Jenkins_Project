@@ -39,7 +39,7 @@ pipeline {
         stage('Deploy SSM') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'admin', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    // withCredentials([usernamePassword(credentialsId: 'admin', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         withIamCredentials(roleArn: "${ROLE_ARN}") {
                             sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
 
