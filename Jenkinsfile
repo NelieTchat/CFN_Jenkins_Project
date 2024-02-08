@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'OperatorEMail', description: 'Email address of the operator', defaultValue: 'tchanela@gmail.com')
-    }
+    // parameters {
+    //     string(name: 'OperatorEMail', description: 'Email address of the operator', defaultValue: 'tchanela@gmail.com')
+    // }
 
     environment {
         NETWORK_STACK_NAME = 'Dev-network-stack'
