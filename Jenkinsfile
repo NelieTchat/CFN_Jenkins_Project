@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
+        // Consider using environment variables for sensitive information like region
+        #AWS_DEFAULT_REGION = 'us-east-1'
+        ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess' // Consider a more restrictive policy based on your needs
         NETWORK_STACK_NAME = 'Dev-network-stack'
         NETWORK_TEMPLATE_FILE = 'network.yaml'
         SSM_STACK_NAME = 'Dev-ssm-stack'
         SSM_TEMPLATE_FILE = 'ssm.yaml'
-        AWS_DEFAULT_REGION = 'us-east-1'
-        ROLE_ARN = 'arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess'
-
-                    
     }
 
     stages {
@@ -39,14 +38,20 @@ pipeline {
         stage('Deploy SSM') {
             steps {
                 script {
-                    // withCredentials([usernamePassword(credentialsId: 'admin', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                        withIamCredentials(roleArn: "${ROLE_ARN}") {
-                            sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
+                    // Use environment variables if available
+                    def region = env.AWS_DEFAULT_REGION ?: 'us-east-1' // Set a default if not defined
 
-                            // Additional steps if needed
-                        }
+                    withIamCredentials(roleArn: ROLE_ARN) {
+                        sh """
+                            aws cloudformation deploy \
+                                --template-file ${SSM_TEMPLATE_FILE} \
+                                --stack-name ${SSM_STACK_NAME} \
+                                --region ${region} \
+                                --capabilities CAPABILITY_IAM
+                        """
                     }
                 }
             }
         }
     }
+}
