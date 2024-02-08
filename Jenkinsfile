@@ -27,8 +27,6 @@ pipeline {
             }
         }
 
-        // Uncomment the following section if needed
-        /*
         stage('Deploy SSM') {
             steps {
                 script {
@@ -49,6 +47,5 @@ pipeline {
                 }
             }
         }
-        */
     }
 }
