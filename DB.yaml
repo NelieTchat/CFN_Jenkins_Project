@@ -21,6 +21,7 @@ Parameters:
       - db.t2.small
       - db.t2.medium
       - db.t2.large
+  
   MultiAZ:
     Description: Create replica in a different Availability zone.
     Type: String
@@ -29,6 +30,7 @@ Parameters:
       - 'true'
       - 'false'
     ConstraintDescription: Multi-AZ must be true or false.
+  
   DBAllocatedStorage:
     Description: The size of the database (Gb)
     Type: Number
@@ -36,6 +38,7 @@ Parameters:
     MaxValue: '1024'
     ConstraintDescription: must be between 20 and 1024Gb.
     Default: 90
+  
   StorageType:
     Description: The type of storage.
     Type: String
@@ -44,6 +47,7 @@ Parameters:
       - gp2
       - io1
     ConstraintDescription: must be a valid storage type.    
+  
   MasterUsername:
     Description: Username for MySQL database access
     NoEcho: 'true'
@@ -52,8 +56,8 @@ Parameters:
     MaxLength: '16'
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
     ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
-    AllowedValues:
-      - admin
+    Default: 'admin'   
+  
   MasterUserPassword:
     Description: Password MySQL database access
     NoEcho: 'true'
@@ -61,6 +65,8 @@ Parameters:
     MinLength: '8'
     MaxLength: '41'
     AllowedPattern: '(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])^([a-zA-Z0-9]{8,32})$'
+    Default: '18Tama15'
+  
   DBEngineVersion:
     Description: The database engine version
     Type: String
