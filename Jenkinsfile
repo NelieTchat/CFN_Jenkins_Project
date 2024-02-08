@@ -82,6 +82,7 @@ pipeline {
                             --template-file webapp.yaml \\
                             --stack-name Dev-webapp-stack \\
                             --region ${AWS_DEFAULT_REGION} 
+                            --parameter-overrides OperatorEMail=tchanela@gmail.com
 
                         """
                     }
