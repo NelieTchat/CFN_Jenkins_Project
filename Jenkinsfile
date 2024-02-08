@@ -26,7 +26,7 @@ pipeline {
                             aws cloudformation deploy \
                             --template-file ${NETWORK_TEMPLATE_FILE} \
                             --stack-name ${NETWORK_STACK_NAME} \
-                            --region ${AWS_DEFAULT_REGION}
+                            --region ${AWS_DEFAULT_REGION} \
                             --arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
                         """
                         // Additional steps if needed
@@ -56,4 +56,4 @@ pipeline {
 //             }
 //         }
 //     }
-// }
+}
