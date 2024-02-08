@@ -26,9 +26,9 @@ pipeline {
                         --template-file ${NETWORK_TEMPLATE_FILE} \
                         --stack-name ${NETWORK_STACK_NAME} \
                         --region ${AWS_DEFAULT_REGION} \
-                        --role-arn arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
-
+                        --role-arn arn:\\\${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
                     """
+
 
                     
                     // sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
