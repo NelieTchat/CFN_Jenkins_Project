@@ -7,7 +7,6 @@ pipeline {
         SSM_STACK_NAME = 'Dev-ssm-stack'
         SSM_TEMPLATE_FILE = 'ssm.yaml'
         AWS_DEFAULT_REGION = 'us-east-1'
-        ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
     }
 
     stages {
@@ -27,7 +26,6 @@ pipeline {
                             --template-file ${NETWORK_TEMPLATE_FILE} \\
                             --stack-name ${NETWORK_STACK_NAME} \\
                             --region ${AWS_DEFAULT_REGION} \\
-                            --role-arn arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
                         """
                     }
                 }
