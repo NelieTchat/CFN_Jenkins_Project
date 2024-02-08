@@ -69,8 +69,14 @@ pipeline {
         stage('Deploy webapp') {
             steps {
                 script {
+                    if (isProductionEnvironment()) {
+                        withEnv {
+                            OPERATOR_EMAIL = 'tchanela@gmail.com' // Replace with your actual email
+                        }
+                    }
+
                     def parameters = [
-                        "OperatorEMail='${OPERATOR_EMAIL}"
+                        "OPERATOR_EMAIL='${OPERATOR_EMAIL}'"
                     ].join(' ')
 
                     withCredentials([
