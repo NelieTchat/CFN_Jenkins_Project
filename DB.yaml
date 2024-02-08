@@ -99,7 +99,6 @@ Resources:
         - Key: Name
           Value: !Ref DBName
 
-
   ReadReplica:
     Type: AWS::RDS::DBInstance
     Properties:
