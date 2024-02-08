@@ -15,7 +15,7 @@ pipeline {
                         $class: 'AmazonWebServicesCredentialsBinding',
                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-                        credentialsId: 'your-credentials-id'
+                        credentialsId: 'admin'
                     ]]) {
                         sh """
                             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -24,7 +24,7 @@ pipeline {
                             --template-file ${NETWORK_TEMPLATE_FILE} \
                             --stack-name ${NETWORK_STACK_NAME} \
                             --region ${AWS_DEFAULT_REGION} \
-                            --role-arn arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+                            --role-arn arn:${AWS::Partition}:iam::aws:AWSCloudFormationFullAccess
                         """
                         // Additional steps if needed
                     }
