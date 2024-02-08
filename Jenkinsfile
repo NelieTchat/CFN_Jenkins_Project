@@ -27,13 +27,14 @@ pipeline {
                             --template-file ${NETWORK_TEMPLATE_FILE} \
                             --stack-name ${NETWORK_STACK_NAME} \
                             --region ${AWS_DEFAULT_REGION} \
-                            --arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+                            --role-arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
                         """
                         // Additional steps if needed
                     }
                 }
             }
         }
+
 
 //         stage('Deploy SSM') {
 //             steps {
