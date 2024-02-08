@@ -7,6 +7,9 @@ pipeline {
         SSM_STACK_NAME = 'Dev-ssm-stack'
         SSM_TEMPLATE_FILE = 'ssm.yaml'
         AWS_DEFAULT_REGION = 'us-east-1'
+        ROLE_ARN = arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+
+                    
     }
 
     stages {
@@ -36,15 +39,12 @@ pipeline {
         stage('Deploy SSM') {
             steps {
                 script {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-                        credentialsId: 'admin'
-                    ]]) {
-                        sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
+                    withCredentials([usernamePassword(credentialsId: 'admin', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                        withIamCredentials(roleArn: "${ROLE_ARN}") {
+                            sh "aws cloudformation deploy --template-file ${SSM_TEMPLATE_FILE} --stack-name ${SSM_STACK_NAME} --region ${AWS_DEFAULT_REGION} --capabilities CAPABILITY_IAM"
 
-                        // Additional steps if needed
+                            // Additional steps if needed
+                        }
                     }
                 }
             }
