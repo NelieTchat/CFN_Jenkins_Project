@@ -47,26 +47,19 @@ Parameters:
       - gp2
       - io1
     ConstraintDescription: must be a valid storage type.    
-  
+    
   MasterUsername:
-    Description: Username for MySQL database access
+    Description: ARN of the Secrets Manager secret containing the database username.
     NoEcho: 'true'
     Type: String
-    MinLength: '1'
-    MaxLength: '16'
-    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
-    Default: 'admin'   
-  
+    Default: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'
+
   MasterUserPassword:
-    Description: Password MySQL database access
+    Description: ARN of the Secrets Manager secret containing the database password.
     NoEcho: 'true'
     Type: String
-    MinLength: '8'
-    MaxLength: '41'
-    AllowedPattern: '(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])^([a-zA-Z0-9]{8,32})$'
-    Default: '18Tama15'
-  
+    Default: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'
+
   DBEngineVersion:
     Description: The database engine version
     Type: String

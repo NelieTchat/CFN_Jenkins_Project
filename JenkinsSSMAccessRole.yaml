@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Provides Session Manager access without an Internet Gateway to an existing instance in a private subnet and access to parametetr store.
+Parameters:
+  # Optional environment type
+  EnvName:
+    Type: String
+    Description: 'The Environment type'
+    Default: Dev
+
+Resources:
+  JenkinsInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref JenkinsAccessRole
+  SSMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref SSMInstanceSSMRole
+
+
+  JenkinsAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: ParameterStoreAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource:
+                  - arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername/*
+                  - arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword/*
+                  - arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail/*  
+
+  SSMInstanceSSMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+
+Outputs:
+  JenkinsInstanceProfile:
+    Description: 'The ARN of the Jenkins Instance Profile'
+    Value: !GetAtt JenkinsInstanceProfile.Arn
+    Export:
+      Name: !Sub "${EnvName}-JenkinsInstanceProfile"
+
+  SSMInstanceProfile:
+    Description: 'The ARN of the SSM Instance Profile'
+    Value: !GetAtt SSMInstanceProfile.Arn
+    Export:
+      Name: !Sub "${EnvName}-SSMInstanceProfile"
+
+  JenkinsAccessRoleARN:
+    Description: 'The ARN of the Jenkins Access Role'
+    Value: !GetAtt JenkinsAccessRole.Arn
+    Export:
+      Name: !Sub "${EnvName}-JenkinsAccessRoleARN"
+  
+  SSMInstanceSSMRoleARN:
+    Description: 'The ARN of the SSM Role'
+    Value: !Ref SSMInstanceSSMRole
+    Export:
+      Name: !Sub "${EnvName}-SSMRoleARN"
+
+

@@ -34,16 +34,7 @@ Parameters:
     Type: String
     Description: CIDR block for the second private subnet
     Default: '10.0.5.0/24'
-    # PrivateSubnet5CidrBlock:
-    #   Type: String
-    #   Description: CIDR block for the second private subnet
-    #   Default: '10.0.6.0/24'
-    # PrivateSubnet6CidrBlock:
-    #   Type: String
-    #   Description: CIDR block for the second private subnet
-    #   Default: '10.0.7.0/24'    
-# This template is designed to deploy the infrastructure for a high-availability web application 
-# on a specified cloud provider, with AWS being the chosen platform in this instance.
+
 Resources:
   VPC:
     Type: AWS::EC2::VPC
