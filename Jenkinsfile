@@ -119,13 +119,13 @@ def deployStack(String templateFile, String stackName) {
     ]
     ]) {
         withCredentials([
-    [
-        $class: 'AmazonWebServicesCredentialsBinding',
-        region: '${AWS_DEFAULT_REGION}',
-        roleArn: 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail/*'
-        // secretId: '/my-app/database-password'
-    ]
-    }
+            [
+                $class: 'AmazonWebServicesCredentialsBinding',
+                region: '${AWS_DEFAULT_REGION}',
+                roleArn: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword/*'
+                // secretId: '/my-app/database-password'
+            ]
+        ])
         script {
             // Retrieve secrets and set environment variables
             sh """
@@ -141,3 +141,4 @@ def deployStack(String templateFile, String stackName) {
             """
         }
     }
+}
