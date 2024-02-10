@@ -129,16 +129,17 @@ def deployStack(String templateFile, String stackName) {
         script {
             // Retrieve secrets and set environment variables
             sh """
-                DATABASE_USERNAME=$(aws ssm get-parameter --name /my-app/database-username --query Parameter.Value --output text)
-                DATABASE_PASSWORD=$(aws ssm get-parameter --name /my-app/database-password --query Parameter.Value --output text)
-                OPERATOR_EMAIL=$(aws ssm get-parameter --name /my-app/operator1-email --query Parameter.Value --output text)
+                DATABASE_USERNAME=\$(aws ssm get-parameter --name /my-app/database-username --query Parameter.Value --output text)
+                DATABASE_PASSWORD=\$(aws ssm get-parameter --name /my-app/database-password --query Parameter.Value --output text)
+                OPERATOR_EMAIL=\$(aws ssm get-parameter --name /my-app/operator1-email --query Parameter.Value --output text)
 
-                export DATABASE_USERNAME="$DATABASE_USERNAME"
-                export DATABASE_PASSWORD="$DATABASE_PASSWORD"
-                export OPERATOR_EMAIL="$OPERATOR_EMAIL"
+                export DATABASE_USERNAME="\$DATABASE_USERNAME"
+                export DATABASE_PASSWORD="\$DATABASE_PASSWORD"
+                export OPERATOR_EMAIL="\$OPERATOR_EMAIL"
 
                 // Deploy stack...
             """
+
         }
     }
 }
