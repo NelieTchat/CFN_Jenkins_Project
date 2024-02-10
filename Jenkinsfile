@@ -10,10 +10,11 @@ pipeline {
 
     environment {
         // Access stack names from parameters:
-        NETWORK_STACK_NAME = params.NETWORK_STACK_NAME
-        SSM_STACK_NAME = params.SSM_STACK_NAME
-        DATABASE_STACK_NAME = params.DATABASE_STACK_NAME
-        WEBAPP_STACK_NAME = params.WEBAPP_STACK_NAME
+        NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
+        SSM_STACK_NAME = "${params.SSM_STACK_NAME}"
+        DATABASE_STACK_NAME = "${params.DATABASE_STACK_NAME}"
+        WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
+
         AWS_DEFAULT_REGION = 'us-east-1'
     }
 
@@ -32,16 +33,16 @@ pipeline {
         }
 
         stage('Validate CloudFormation Templates') {
-            when {
-                expression {
-                    anyOf {
-                        fileExists('network.yaml') && hasChanges(file: 'network.yaml')
-                        fileExists('ssm.yaml') && hasChanges(file: 'ssm.yaml')
-                        fileExists('webapp.yaml') && hasChanges(file: 'webapp.yaml')
-                        fileExists('DB.yaml') && hasChanges(file: 'DB.yaml')
-                    }
-                }
-            }
+            // when {
+            //     expression {
+            //         anyOf {
+            //             fileExists('network.yaml') && hasChanges(file: 'network.yaml')
+            //             fileExists('ssm.yaml') && hasChanges(file: 'ssm.yaml')
+            //             fileExists('webapp.yaml') && hasChanges(file: 'webapp.yaml')
+            //             fileExists('DB.yaml') && hasChanges(file: 'DB.yaml')
+            //         }
+            //     }
+            // }
             steps {
                 parallel {
                     stage('Validate Network Template') {
@@ -69,11 +70,12 @@ pipeline {
         }
 
         stage('Deploy Infrastructure') {
-            when {
-                expression {
-                    previousStageWasSuccessful('Validate CloudFormation Templates')
-                }
-            }
+            
+            // when {
+            //     expression {
+            //         previousStageWasSuccessful('Validate CloudFormation Templates')
+            //     }
+            // }
             steps {
                 parallel {
                     stage('Deploy infrastructure stack') {
