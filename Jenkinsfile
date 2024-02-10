@@ -24,42 +24,36 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/NelieTchat/CFN_Jenkins_Project.git'
             }
         }
-
+        // Build application stage
         stage('Build Application') {
             steps {
                 // Replace with your specific build commands (e.g., mvn clean package)
                 sh 'mvn clean package'
             }
         }
-
+        // CloudFormation template validation stage
         stage('Validate CloudFormation Templates') {
-            // when {
-            //     expression {
-            //         anyOf {
-            //             fileExists('network.yaml') && hasChanges(file: 'network.yaml')
-            //             fileExists('ssm.yaml') && hasChanges(file: 'ssm.yaml')
-            //             fileExists('webapp.yaml') && hasChanges(file: 'webapp.yaml')
-            //             fileExists('DB.yaml') && hasChanges(file: 'DB.yaml')
-            //         }
-            //     }
-            // }
             steps {
                 parallel {
+                    // Validate network template
                     stage('Validate Network Template') {
                         steps {
                             sh 'aws cloudformation validate-template --template-body file://network.yaml'
                         }
                     }
+                    // Validate SSM role template
                     stage('Validate ssmRole Template') {
                         steps {
                             sh 'aws cloudformation validate-template --template-body file://ssm.yaml'
                         }
                     }
+                    // Validate webapp template
                     stage('Validate webapp Template') {
                         steps {
                             sh 'aws cloudformation validate-template --template-body file://webapp.yaml'
                         }
                     }
+                    // Validate database template
                     stage('Validate DB Template') {
                         steps {
                             sh 'aws cloudformation validate-template --template-body file://DB.yaml'
@@ -68,14 +62,8 @@ pipeline {
                 }
             }
         }
-
+        // Infrastructure deployment stage
         stage('Deploy Infrastructure') {
-            
-            // when {
-            //     expression {
-            //         previousStageWasSuccessful('Validate CloudFormation Templates')
-            //     }
-            // }
             steps {
                 parallel {
                     stage('Deploy infrastructure stack') {
@@ -91,7 +79,7 @@ pipeline {
             }
         }
     }
-
+    // Post-build actions
     post {
         success {
             echo "Pipeline completed successfully!"
