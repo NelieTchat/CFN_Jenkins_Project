@@ -92,7 +92,7 @@ pipeline {
                     // }
                     withCredentials([
                         [$class: 'AssumeCredentialsBinding',
-                        region: AWS_REGION,mazonWebService
+                        region: AWS_REGION,
                         roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
                     ]) {
                         getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
