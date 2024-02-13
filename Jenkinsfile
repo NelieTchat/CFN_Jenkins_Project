@@ -71,6 +71,7 @@ pipeline {
 
                     withCredentials([
                         [$class: 'AmazonWebServicesCredentialsBinding',
+                         region: us-east-1
                          roleArn: JENKINS_PASSWORD_ROLE_ARN]
                         ]
                     ) {
@@ -82,7 +83,7 @@ pipeline {
 
                     withCredentials([
                         [$class: 'AmazonWebServicesCredentialsBinding',
-                         region: AWS_REGION,
+                         region: us-east-1
                          roleArn: JENKINS_OPERATOREMAIL_ROLE_ARN]
                         ]
                     ) {
