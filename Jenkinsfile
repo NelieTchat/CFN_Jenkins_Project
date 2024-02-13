@@ -21,19 +21,6 @@ pipeline {
         DATABASE_STACK_NAME = "${params.DATABASE_STACK_NAME}"
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
     }
-
-
-    stages {
-        stage('Deploy') {
-            steps {
-                script {
-                    // Access secrets using retrieved parameters (no need for nested script block)
-                    getSSMParameters('MasterUsername', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
-                    getSSMParameters('MasterUserPassword', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
-                    getSSMParameters('OperatorEmail', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
-
-                    // Validate CloudFormation templates (optional)
-                    // sh '...'
                     // Define the `getSSMParameters` function outside the stages
                     def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
                         String roleArn = env[roleArnEnvVar]
@@ -66,6 +53,18 @@ pipeline {
                         """
                     }
                 }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                script {
+                    // Access secrets using retrieved parameters (no need for nested script block)
+                    getSSMParameters('MasterUsername', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
+                    getSSMParameters('MasterUserPassword', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
+                    getSSMParameters('OperatorEmail', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
+
+                    // Validate CloudFormation templates (optional)
+                    // sh '...'
                     // Deploy Network stack
                     deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLE')
 
