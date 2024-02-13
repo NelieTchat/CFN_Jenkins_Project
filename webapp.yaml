@@ -21,7 +21,7 @@ Parameters:
   OperatorEmail:
     NoEcho: true
     Type: String
-    Default: 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail'
+    Default: tchanel1@yahoo.fr
 
 Resources:
   LoadBalancer:

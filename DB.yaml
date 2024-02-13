@@ -52,13 +52,13 @@ Parameters:
     Description: ARN of the Secrets Manager secret containing the database username.
     NoEcho: 'true'
     Type: String
-    Default: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'
+    Default: Alpha
 
   MasterUserPassword:
     Description: ARN of the Secrets Manager secret containing the database password.
     NoEcho: 'true'
     Type: String
-    Default: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'
+    Default: 18tele15
 
   DBEngineVersion:
     Description: The database engine version
