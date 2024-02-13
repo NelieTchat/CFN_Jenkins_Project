@@ -91,15 +91,15 @@ pipeline {
                     //     """
                     // }
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
-                        region: AWS_REGION,
+                        [$class: 'AssumeCredentialsBinding',
+                        region: AWS_REGION,mazonWebService
                         roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
                     ]) {
                         getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
                     }
 
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        [$class: 'AssumeCredentialsBinding',
                         region: AWS_REGION,
                         roleArn: "${JENKINS_PASSWORD_ROLE_ARN}"]
                     ]) {
@@ -107,7 +107,7 @@ pipeline {
                     }
 
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        [$class: 'AssumeCredentialsBinding',
                         region: AWS_REGION,
                         roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
                     ]) {
