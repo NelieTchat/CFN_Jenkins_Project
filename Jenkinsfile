@@ -9,11 +9,11 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = 'us-east-1'  // Replace with your actual region
+        AWS_REGION = 'us-east-1'  
 
-        JENKINS_USERNAME_ROLE_ARN = '/my-app/MasterUsername'  // Replace placeholders with actual SSM parameter names
-        JENKINS_PASSWORD_ROLE_ARN = '/my-app/MasterUserPassword'
-        JENKINS_OPERATOREMAIL_ROLE_ARN = '/my-app/OperatorEmail'
+        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'  
+        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'  
+        JENKINS_OPERATOREMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail'
         CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
 
         NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
@@ -79,6 +79,18 @@ pipeline {
                         sh """
                             DATABASE_PASSWORD=\$(aws ssm get-parameter --name ${JENKINS_PASSWORD_ROLE_ARN} --query Parameter.Value --output text)
                             export DATABASE_PASSWORD
+                        """
+                    }
+
+                    withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                         region: AWS_REGION,
+                         roleArn: JENKINS_OPERATOREMAIL_ROLE_ARN]
+                        ]
+                    ) {
+                        sh """
+                            OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
+                            export OPERATOREMAIL_ROLE
                         """
                     }
                     getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
