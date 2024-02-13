@@ -16,7 +16,7 @@ pipeline {
         stage('Deploy CLoudformation stacks') {
             steps {
                 script {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', AdminNel: 'Jenkins-user', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AdminNel', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])}
                         sh "aws cloudformation deploy --stack-name NETWORK_STACK_NAME --template-file NETWORK_TEMPLATE_FIL --region \"${AWS_REGION}\""
                         sh "aws cloudformation deploy --WEBAPP_STACK_NAME --template-file WEBAPP_STACK_FILE --region \"${AWS_REGION}\""
                         sh "aws cloudformation deploy --DATABASE_STACK_NAME --template-file DATABASE_TEMPLATE_FILE --region \"${AWS_REGION}\""
