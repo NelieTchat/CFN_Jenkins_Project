@@ -10,7 +10,7 @@ pipeline {
     NETWORK_TEMPLATE_FILE = 'network.yaml'
     SSM_TEMPLATE_FILE = 'SsmRole.yaml'
     WEBAPP_STACK_FILE = 'webapp.yaml'
-      DATABASE_TEMPLATE_FILE = 'Dev-DB.yaml'
+    DATABASE_TEMPLATE_FILE = 'Dev-DB.yaml'
   }
     stages {
         stage('Deploy CLoudformation stacks') {
