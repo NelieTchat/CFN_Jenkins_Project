@@ -5,15 +5,15 @@ pipeline {
         string(name: 'NETWORK_STACK_NAME', defaultValue: 'Dev-network-stack', description: 'Name of the network stack')
         string(name: 'SSM_STACK_NAME', defaultValue: 'Dev-ssm-stack', description: 'Name of the ssmrole stack')
         string(name: 'DATABASE_STACK_NAME', defaultValue: 'Dev-DB-stack', description: 'Name of the database stack')
-        string(name: 'WEBAPP_STACK_NAME', defaultValue: 'Dev-DB-stackk', description: 'Name of the webapp stack')
+        string(name: 'WEBAPP_STACK_NAME', defaultValue: 'Dev-web-app-stack', description: 'Name of the webapp stack')
     }
 
     environment {
-        AWS_REGION = 'us-east-1'
+        AWS_REGION = 'us-east-1'  // Replace with your actual region
 
-        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourUsernameRole'
-        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourPasswordRole'
-        JENKINS_OPERATOREMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourOperatorEmailRole'
+        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'  
+        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'  
+        JENKINS_OPERATOREMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail'  
         CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
 
         NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
@@ -22,7 +22,7 @@ pipeline {
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
     }
 
-    // Define the getSSMParameters function outside the stages
+    // Define the `getSSMParameters` function outside the stages
     def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
         String roleArn = env[roleArnEnvVar]
 
@@ -40,7 +40,6 @@ pipeline {
             }
         }
     }
-
 
     def deployStack(String templateFile, String stackName, String roleArn) {
         withCredentials([
@@ -60,7 +59,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Access secrets using retrieved parameters
+                    // Access secrets using retrieved parameters (no need for nested script block)
                     getSSMParameters('MasterUsername', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
                     getSSMParameters('MasterUserPassword', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
                     getSSMParameters('OperatorEmail', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
@@ -99,4 +98,3 @@ pipeline {
         }
     }
 }
- 
