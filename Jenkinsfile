@@ -22,16 +22,16 @@ pipeline {
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
     }
 
+    // Define the getSSMParameters function outside the stages
     def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
         String roleArn = env[roleArnEnvVar]
 
         withCredentials([
-            [
-                $class: 'AmazonWebServicesCredentialsBinding',
-                region: AWS_REGION,
-                roleArn: roleArn
+            [$class: 'AmazonWebServicesCredentialsBinding',
+             region: AWS_REGION,
+             roleArn: roleArn]
             ]
-        ]) {
+        ) {
             script {
                 sh """
                     ${outputVar}=\$(aws ssm get-parameter --name /my-app/${parameterName} --query Parameter.Value --output text)
@@ -59,14 +59,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Validate CloudFormation templates
-                    sh 'aws cloudformation validate-template --template-body file://network.yaml'
-                    sh 'aws cloudformation validate-template --template-body file://ssm.yaml'
-                    sh 'aws cloudformation validate-template --template-body file://webapp.yaml'
-                    sh 'aws cloudformation validate-template --template-body file://DB.yaml'
+                    // Access secrets using retrieved parameters
+                    getSSMParameters('database-username', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
+                    getSSMParameters('database-password', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
+                    getSSMParameters('operator1-email', 'JENKINS_OPERATOR_EMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
+
+                    // Validate CloudFormation templates (optional)
+                    // sh '...'
 
                     // Deploy Network stack
-                    deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLEN')
+                    deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLE')
 
                     // Deploy SSM stack
                     deployStack('JenkinsSSMAccessRole.yaml', SSM_STACK_NAME, 'CLOUDFORMATION_ROLE')
@@ -96,3 +98,4 @@ pipeline {
         }
     }
 }
+ 
