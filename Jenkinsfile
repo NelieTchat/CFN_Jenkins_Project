@@ -41,6 +41,7 @@ pipeline {
         }
     }
 
+
     def deployStack(String templateFile, String stackName, String roleArn) {
         withCredentials([
             [
@@ -60,9 +61,9 @@ pipeline {
             steps {
                 script {
                     // Access secrets using retrieved parameters
-                    getSSMParameters('database-username', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
-                    getSSMParameters('database-password', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
-                    getSSMParameters('operator-email', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
+                    getSSMParameters('MasterUsername', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
+                    getSSMParameters('MasterUserPassword', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
+                    getSSMParameters('OperatorEmail', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
 
                     // Validate CloudFormation templates (optional)
                     // sh '...'
