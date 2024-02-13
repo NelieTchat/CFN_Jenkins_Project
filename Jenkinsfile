@@ -11,22 +11,19 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
 
-        // IAM roles with ARNs (replace placeholders with actual roles)
         JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourUsernameRole'
         JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourPasswordRole'
         JENKINS_OPERATOR_EMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourOperatorEmailRole'
         CLOUDFORMATION_DEPLOYER_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
 
-        // Access stack names from parameters:
         NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
         SSM_STACK_NAME = "${params.SSM_STACK_NAME}"
         DATABASE_STACK_NAME = "${params.DATABASE_STACK_NAME}"
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
     }
 
-    // Functions with role-based access
     def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
-        String roleArn = env[roleArnEnvVar] // Access role ARN from environment variable
+        String roleArn = env[roleArnEnvVar]
 
         withCredentials([
             [
@@ -36,7 +33,6 @@ pipeline {
             ]
         ]) {
             script {
-                // Retrieve secrets and set environment variables
                 sh """
                     ${outputVar}=\$(aws ssm get-parameter --name /my-app/${parameterName} --query Parameter.Value --output text)
                     export ${outputVar}
@@ -45,7 +41,6 @@ pipeline {
         }
     }
 
-    // Improved `deployStack` function:
     def deployStack(String templateFile, String stackName, String roleArn) {
         withCredentials([
             [
@@ -61,89 +56,43 @@ pipeline {
     }
 
     stages {
-        // Validate CloudFormation templates stage
-        stage('Validate CloudFormation Templates') {
-            steps {
-                parallel {
-                    // Validate network template
-                    stage('Validate Network Template') {
-                        steps {
-                            sh 'aws cloudformation validate-template --template-body file://network.yaml'
-                        }
-                    }
-                    // Validate SSM role template
-                    stage('Validate ssmRole Template') {
-                        steps {
-                            sh 'aws cloudformation validate-template --template-body file://ssm.yaml'
-                        }
-                    }
-                    // Validate webapp template
-                    stage('Validate webapp Template') {
-                        steps {
-                            sh 'aws cloudformation validate-template --template-body file://webapp.yaml'
-                        }
-                    }
-                    // Validate database template
-                    stage('Validate DB Template') {
-                        steps {
-                            sh 'aws cloudformation validate-template --template-body file://DB.yaml'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Deployment stages (replace with your specific needs)
-        stage('Deploy Network') {
+        stage('Deploy') {
             steps {
                 script {
-                    // Wait for previous stages (if applicable)
-                    build job: '...', wait: true // Replace with any dependencies
+                    // Validate CloudFormation templates
+                    sh 'aws cloudformation validate-template --template-body file://network.yaml'
+                    sh 'aws cloudformation validate-template --template-body file://ssm.yaml'
+                    sh 'aws cloudformation validate-template --template-body file://webapp.yaml'
+                    sh 'aws cloudformation validate-template --template-body file://DB.yaml'
 
-                    // Retrieve secrets using appropriate IAM role
-                    getSSMParameters('database-username', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
-                    getSSMParameters('database-password', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
-                    getSSMParameters('operator1-email', 'JENKINS_OPERATOR_EMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
-                }
-            }
-            // Deploy stack using appropriate IAM role
-            deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLEN')
-            post {
-                always {
-                    echo "Network stack deployment completed!"
-                }
-            }
+                    // Deploy Network stack
+                    deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLEN')
 
-            // Deploy SSM stack using appropriate IAM role
-            deployStack('JenkinsSSMAccessRole.yaml', SSM_STACK_NAME, 'CLOUDFORMATION_ROLE')
-            post {
-                always {
-                    echo "SSM stack deployment completed!"
+                    // Deploy SSM stack
+                    deployStack('JenkinsSSMAccessRole.yaml', SSM_STACK_NAME, 'CLOUDFORMATION_ROLE')
+
+                    // Deploy WebApp stack
+                    deployStack('webapp.yaml', WEBAPP_STACK_NAME, 'CLOUDFORMATION_ROLE')
+
+                    // Deploy Database stack
+                    deployStack('DB.yaml', DATABASE_STACK_NAME, 'CLOUDFORMATION_ROLE')
                 }
             }
 
-            // Deploy webapp stack using appropriate IAM role
-            deployStack('webapp.yaml', WEBAPP_STACK_NAME, 'CLOUDFORMATION_ROLE')
             post {
                 always {
-                    echo "WebApp stack deployment completed!"
-                }
-            }
-
-            // Deploy database stack using appropriate IAM role
-            deployStack('DB.yaml', DATABASE_STACK_NAME, 'CLOUDFORMATION_ROLE')
-            post {
-                always {
-                    echo "Database stack deployment completed!"
+                    echo "All stack deployments completed!"
                 }
             }
         }
     }
 
-    // Post-build actions
     post {
         success {
             echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed"
         }
     }
 }
