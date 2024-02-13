@@ -13,8 +13,8 @@ pipeline {
 
         JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourUsernameRole'
         JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourPasswordRole'
-        JENKINS_OPERATOR_EMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourOperatorEmailRole'
-        CLOUDFORMATION_DEPLOYER_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
+        JENKINS_OPERATOREMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourOperatorEmailRole'
+        CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
 
         NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
         SSM_STACK_NAME = "${params.SSM_STACK_NAME}"
@@ -62,7 +62,7 @@ pipeline {
                     // Access secrets using retrieved parameters
                     getSSMParameters('database-username', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
                     getSSMParameters('database-password', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
-                    getSSMParameters('operator1-email', 'JENKINS_OPERATOR_EMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
+                    getSSMParameters('operator-email', 'JENKINS_OPERATOREMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
 
                     // Validate CloudFormation templates (optional)
                     // sh '...'
