@@ -9,29 +9,59 @@ pipeline {
     }
 
     environment {
+        AWS_REGION = 'us-east-1'
+
+        // IAM roles with ARNs (replace placeholders with actual roles)
+        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourUsernameRole'
+        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourPasswordRole'
+        JENKINS_OPERATOR_EMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:role/YourOperatorEmailRole'
+        CLOUDFORMATION_DEPLOYER_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
+
         // Access stack names from parameters:
         NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
         SSM_STACK_NAME = "${params.SSM_STACK_NAME}"
         DATABASE_STACK_NAME = "${params.DATABASE_STACK_NAME}"
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
+    }
 
-        AWS_DEFAULT_REGION = 'us-east-1'
+    // Functions with role-based access
+    def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
+        String roleArn = env[roleArnEnvVar] // Access role ARN from environment variable
+
+        withCredentials([
+            [
+                $class: 'AmazonWebServicesCredentialsBinding',
+                region: AWS_REGION,
+                roleArn: roleArn
+            ]
+        ]) {
+            script {
+                // Retrieve secrets and set environment variables
+                sh """
+                    ${outputVar}=\$(aws ssm get-parameter --name /my-app/${parameterName} --query Parameter.Value --output text)
+                    export ${outputVar}
+                """
+            }
+        }
+    }
+
+    // Improved `deployStack` function:
+    def deployStack(String templateFile, String stackName, String roleArn) {
+        withCredentials([
+            [
+                $class: 'AmazonWebServicesCredentialsBinding',
+                region: AWS_REGION,
+                roleArn: roleArn
+            ]
+        ]) {
+            sh """
+                aws cloudformation deploy --template-file ${templateFile} --stack-name ${stackName} --region ${AWS_REGION}
+            """
+        }
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                git branch: 'master', url: 'https://github.com/NelieTchat/CFN_Jenkins_Project.git'
-            }
-        }
-        // Build application stage
-        stage('Build Application') {
-            steps {
-                // Replace with your specific build commands (e.g., mvn clean package)
-                sh 'mvn clean package'
-            }
-        }
-        // CloudFormation template validation stage
+        // Validate CloudFormation templates stage
         stage('Validate CloudFormation Templates') {
             steps {
                 parallel {
@@ -62,74 +92,58 @@ pipeline {
                 }
             }
         }
-        // Infrastructure deployment stage
-        stage('Deploy Infrastructure') {
+
+        // Deployment stages (replace with your specific needs)
+        stage('Deploy Network') {
             steps {
-                parallel {
-                    stage('Deploy infrastructure stack') {
-                        steps {
-                            deployStack("network.yaml", NETWORK_STACK_NAME)
-                            deployStack("ssm.yaml", SSM_STACK_NAME)
-                            deployStack("webapp.yaml", WEBAPP_STACK_NAME)
-                            deployStack("DB.yaml", DATABASE_STACK_NAME)
-                            ssh "configure_database.sh $DATABASE_USERNAME $DATABASE_PASSWORD"
-                        }
-                    }
+                script {
+                    // Wait for previous stages (if applicable)
+                    build job: '...', wait: true // Replace with any dependencies
+
+                    // Retrieve secrets using appropriate IAM role
+                    getSSMParameters('database-username', 'JENKINS_USERNAME_ROLE_ARN', 'DATABASE_USERNAME')
+                    getSSMParameters('database-password', 'JENKINS_PASSWORD_ROLE_ARN', 'DATABASE_PASSWORD')
+                    getSSMParameters('operator1-email', 'JENKINS_OPERATOR_EMAIL_ROLE_ARN', 'OPERATOR_EMAIL')
+                }
+            }
+            // Deploy stack using appropriate IAM role
+            deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLEN')
+            post {
+                always {
+                    echo "Network stack deployment completed!"
+                }
+            }
+
+            // Deploy SSM stack using appropriate IAM role
+            deployStack('JenkinsSSMAccessRole.yaml', SSM_STACK_NAME, 'CLOUDFORMATION_ROLE')
+            post {
+                always {
+                    echo "SSM stack deployment completed!"
+                }
+            }
+
+            // Deploy webapp stack using appropriate IAM role
+            deployStack('webapp.yaml', WEBAPP_STACK_NAME, 'CLOUDFORMATION_ROLE')
+            post {
+                always {
+                    echo "WebApp stack deployment completed!"
+                }
+            }
+
+            // Deploy database stack using appropriate IAM role
+            deployStack('DB.yaml', DATABASE_STACK_NAME, 'CLOUDFORMATION_ROLE')
+            post {
+                always {
+                    echo "Database stack deployment completed!"
                 }
             }
         }
     }
+
     // Post-build actions
     post {
         success {
             echo "Pipeline completed successfully!"
-        }
-        failure {
-            // Add failure notification or actions (e.g., email, Slack)
-        }
-    }
-}
-
-// Improved `deployStack` function:
-def deployStack(String templateFile, String stackName) {
-    withCredentials([
-    [
-        $class: 'AmazonWebServicesCredentialsBinding',
-        region: '${AWS_DEFAULT_REGION}',
-        roleArn: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername/*'
-        // secretId: '/my-app/database-username'
-    ]
-    ]) 
-    withCredentials([
-    [
-        $class: 'AmazonWebServicesCredentialsBinding',
-        region: '${AWS_DEFAULT_REGION}',
-        roleArn: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword/*'
-        // secretId: '/my-app/database-password'
-    ]
-    ]) {
-        withCredentials([
-            [
-                $class: 'AmazonWebServicesCredentialsBinding',
-                region: '${AWS_DEFAULT_REGION}',
-                roleArn: 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword/*'
-                // secretId: '/my-app/database-password'
-            ]
-        ])
-        script {
-            // Retrieve secrets and set environment variables
-            sh """
-                DATABASE_USERNAME=\$(aws ssm get-parameter --name /my-app/database-username --query Parameter.Value --output text)
-                DATABASE_PASSWORD=\$(aws ssm get-parameter --name /my-app/database-password --query Parameter.Value --output text)
-                OPERATOR_EMAIL=\$(aws ssm get-parameter --name /my-app/operator1-email --query Parameter.Value --output text)
-
-                export DATABASE_USERNAME="\$DATABASE_USERNAME"
-                export DATABASE_PASSWORD="\$DATABASE_PASSWORD"
-                export OPERATOR_EMAIL="\$OPERATOR_EMAIL"
-
-                // Deploy stack...
-            """
-
         }
     }
 }

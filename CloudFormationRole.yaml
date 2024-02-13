@@ -1,0 +1,48 @@
+Parameters:
+  EnvironmentName:
+    Description: creating securitygroups for LoadBalancer and WebServer - EnvironmentName in params is connected to Outputs in udagram/udacityProject VPC
+    Type: String
+    Default: Dev
+Resources:  # Attach created role to an instance profile
+  CloudFormationInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref CloudFormationRole
+  # IAM role with granular permissions (customize based on your needs)
+  CloudFormationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+
+Outputs:
+  CloudFormationInstanceProfile:
+    Value: !Ref CloudFormationInstanceProfile
+    Export:
+      Name: !Sub ${EnvironmentName}-CloudFormationInstanceProfile
+
+  CloudFormationInstanceProfileArn:
+    Value: !GetAtt CloudFormationInstanceProfile.Arn
+    Export:
+      Name: !Sub ${EnvironmentName}-CloudFormationInstanceProfileArn
+  CloudFormationRole:
+    Value: !Ref CloudFormationRole
+    Export:
+      Name: !Sub ${EnvironmentName}-CloudFormationRole
+
+  CloudFormationRoleArn:
+    Value: !GetAtt CloudFormationRole.Arn
+    Export:
+      Name: !Sub ${EnvironmentName}-CloudFormationRoleArn

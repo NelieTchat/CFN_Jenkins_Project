@@ -31,7 +31,7 @@ Parameters:
 
 Resources:
   # Attach created role to an instance profile
-  SSMInstanceProfile:
+  CloudFormationInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
@@ -79,7 +79,6 @@ Resources:
       SecurityGroupIds:
         - !GetAtt EC2SecurityGroup.GroupId
       SubnetId: !Ref SubnetId
-      IamInstanceProfile: !Ref SSMInstanceProfile
       UserData:
         Fn::Base64: |
           #!/bin/bash
@@ -96,7 +95,9 @@ Resources:
           apt install -y unzip python3-pip
           pip3 install awscli
           sudo aws configure
-
+      # IamInstanceProfile: 
+      #  Arn: !ImportValue 'Dev-CloudFormationInstanceProfile'
+      
 Outputs:
 
   InstanceId:
