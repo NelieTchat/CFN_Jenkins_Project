@@ -22,38 +22,6 @@ pipeline {
         WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
     }
 
-    // Define the `getSSMParameters` function outside the stages
-    def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
-        String roleArn = env[roleArnEnvVar]
-
-        withCredentials([
-            [$class: 'AmazonWebServicesCredentialsBinding',
-             region: AWS_REGION,
-             roleArn: roleArn]
-            ]
-        ) {
-            script {
-                sh """
-                    ${outputVar}=\$(aws ssm get-parameter --name /my-app/${parameterName} --query Parameter.Value --output text)
-                    export ${outputVar}
-                """
-            }
-        }
-    }
-
-    def deployStack(String templateFile, String stackName, String roleArn) {
-        withCredentials([
-            [
-                $class: 'AmazonWebServicesCredentialsBinding',
-                region: AWS_REGION,
-                roleArn: roleArn
-            ]
-        ]) {
-            sh """
-                aws cloudformation deploy --template-file ${templateFile} --stack-name ${stackName} --region ${AWS_REGION}
-            """
-        }
-    }
 
     stages {
         stage('Deploy') {
@@ -66,7 +34,38 @@ pipeline {
 
                     // Validate CloudFormation templates (optional)
                     // sh '...'
+                    // Define the `getSSMParameters` function outside the stages
+                    def getSSMParameters(String parameterName, String roleArnEnvVar, String outputVar) {
+                        String roleArn = env[roleArnEnvVar]
 
+                        withCredentials([
+                            [$class: 'AmazonWebServicesCredentialsBinding',
+                            region: AWS_REGION,
+                            roleArn: roleArn]
+                            ]
+                        ) {
+                            script {
+                                sh """
+                                    ${outputVar}=\$(aws ssm get-parameter --name /my-app/${parameterName} --query Parameter.Value --output text)
+                                    export ${outputVar}
+                                """
+                            }
+                        }
+                    }
+
+                def deployStack(String templateFile, String stackName, String roleArn) {
+                    withCredentials([
+                        [
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            region: AWS_REGION,
+                            roleArn: roleArn
+                        ]
+                    ]) {
+                        sh """
+                            aws cloudformation deploy --template-file ${templateFile} --stack-name ${stackName} --region ${AWS_REGION}
+                        """
+                    }
+                }
                     // Deploy Network stack
                     deployStack('network.yaml', NETWORK_STACK_NAME, 'CLOUDFORMATION_ROLE')
 
