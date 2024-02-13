@@ -57,39 +57,39 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Retrieve secrets without function
-                    withCredentials([
-                        [$class: 'AssumeRoleCredentialsBinding',
-                         region: AWS_REGION,
-                         roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
-                        ]) {
-                        sh """
-                            DATABASE_USERNAME=\$(aws ssm get-parameter --name ${JENKINS_USERNAME_ROLE_ARN} --query Parameter.Value --output text)
-                            export DATABASE_USERNAME
-                        """
-                    }
+                    // // Retrieve secrets without function
+                    // withCredentials([
+                    //     [$class: 'AssumeRoleCredentialsBinding',
+                    //      region: AWS_REGION,
+                    //      roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
+                    //     ]) {
+                    //     sh """
+                    //         DATABASE_USERNAME=\$(aws ssm get-parameter --name ${JENKINS_USERNAME_ROLE_ARN} --query Parameter.Value --output text)
+                    //         export DATABASE_USERNAME
+                    //     """
+                    // }
 
-                    withCredentials([
-                        [$class: 'AssumeRoleCredentialsBinding',
-                         region: AWS_REGION,
-                         roleArn:  "${JENKINS_USERNAME_ROLE_ARN}"]
-                        ]) {
-                        sh """
-                            DATABASE_PASSWORD=\$(aws ssm get-parameter --name ${JENKINS_PASSWORD_ROLE_ARN} --query Parameter.Value --output text)
-                            export DATABASE_PASSWORD
-                        """
-                    }
+                    // withCredentials([
+                    //     [$class: 'AssumeRoleCredentialsBinding',
+                    //      region: AWS_REGION,
+                    //      roleArn:  "${JENKINS_USERNAME_ROLE_ARN}"]
+                    //     ]) {
+                    //     sh """
+                    //         DATABASE_PASSWORD=\$(aws ssm get-parameter --name ${JENKINS_PASSWORD_ROLE_ARN} --query Parameter.Value --output text)
+                    //         export DATABASE_PASSWORD
+                    //     """
+                    // }
 
-                    withCredentials([
-                        [$class: 'AssumeRoleCredentialsBinding',
-                         region: AWS_REGION,
-                         roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
-                        ]) {
-                        sh """
-                            OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
-                            export OPERATOR_EMAIL
-                        """
-                    }
+                    // withCredentials([
+                    //     [$class: 'AssumeRoleCredentialsBinding',
+                    //      region: AWS_REGION,
+                    //      roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
+                    //     ]) {
+                    //     sh """
+                    //         OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
+                    //         export OPERATOR_EMAIL
+                    //     """
+                    // }
                     getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
                     getSSMParameters('DATABASE_PASSWORD', JENKINS_PASSWORD_ROLE_ARN)
                     getSSMParameters('OPERATOR_EMAIL', JENKINS_OPERATOREMAIL_ROLE_ARN)
