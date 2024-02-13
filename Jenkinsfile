@@ -59,9 +59,9 @@ pipeline {
                 script {
                     // Retrieve secrets without function
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        [$class: 'AssumeRoleCredentialsBinding',
                          region: AWS_REGION,
-                         roleArn: JENKINS_USERNAME_ROLE_ARN]
+                         roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
                         ]) {
                         sh """
                             DATABASE_USERNAME=\$(aws ssm get-parameter --name ${JENKINS_USERNAME_ROLE_ARN} --query Parameter.Value --output text)
@@ -70,9 +70,9 @@ pipeline {
                     }
 
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        [$class: 'AssumeRoleCredentialsBinding',
                          region: AWS_REGION,
-                         roleArn: JENKINS_PASSWORD_ROLE_ARN]
+                         roleArn:  "${JENKINS_USERNAME_ROLE_ARN}"]
                         ]) {
                         sh """
                             DATABASE_PASSWORD=\$(aws ssm get-parameter --name ${JENKINS_PASSWORD_ROLE_ARN} --query Parameter.Value --output text)
@@ -81,9 +81,9 @@ pipeline {
                     }
 
                     withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        [$class: 'AssumeRoleCredentialsBinding',
                          region: AWS_REGION,
-                         roleArn: JENKINS_OPERATOREMAIL_ROLE_ARN]
+                         roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
                         ]) {
                         sh """
                             OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
