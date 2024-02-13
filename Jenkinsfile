@@ -11,9 +11,9 @@ pipeline {
         SSM_TEMPLATE_FILE = 'SsmRole.yaml'
         WEBAPP_STACK_FILE = 'webapp.yaml'
         DATABASE_TEMPLATE_FILE = 'Dev-DB.yaml'
-        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-Username-Role'
-        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-Password-Role'
-        CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-CloudFormation-Role'
+        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'
+        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'
+        CLOUDFORMATION_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail'
         // PARAMETER_STORE_PREFIX = ''
     }
 
@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Assume the CloudFormation IAM role and get temporary credentials
-                    def assumeRoleCommand = """aws sts assume-role --role-arn ${CLOUDFORMATION_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
+                    def assumeRoleCommand = """aws sts assume-role --role-arn ${CLOUDFORMATION_ROLE_ARN} --role-session-name SsmRole --region ${AWS_REGION} --output json"""
                     def stsOutput = sh(script: assumeRoleCommand, returnStdout: true).trim()
                     def credentials = readJSON text: stsOutput
 
