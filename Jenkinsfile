@@ -90,9 +90,29 @@ pipeline {
                     //         export OPERATOR_EMAIL
                     //     """
                     // }
-                    getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
-                    getSSMParameters('DATABASE_PASSWORD', JENKINS_PASSWORD_ROLE_ARN)
-                    getSSMParameters('OPERATOR_EMAIL', JENKINS_OPERATOREMAIL_ROLE_ARN)
+                    withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        region: AWS_REGION,
+                        roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
+                    ]) {
+                        getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
+                    }
+
+                    withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        region: AWS_REGION,
+                        roleArn: "${JENKINS_PASSWORD_ROLE_ARN}"]
+                    ]) {
+                        getSSMParameters('DATABASE_PASSWORD', JENKINS_PASSWORD_ROLE_ARN)
+                    }
+
+                    withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                        region: AWS_REGION,
+                        roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
+                    ]) {
+                        getSSMParameters('OPERATOR_EMAIL', JENKINS_OPERATOREMAIL_ROLE_ARN)
+                    }
 
                     // Validate CloudFormation templates (optional)
                     // sh '...'
