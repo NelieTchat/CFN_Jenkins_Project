@@ -90,7 +90,7 @@ pipeline {
                     ) {
                         sh """
                             OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
-                            export OPERATOREMAIL_ROLE
+                            export OPERATOR_EMAIL
                         """
                     }
                     getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
