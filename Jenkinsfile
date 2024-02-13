@@ -1,150 +1,114 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'NETWORK_STACK_NAME', defaultValue: 'Dev-network-stack', description: 'Name of the network stack')
-        string(name: 'SSM_STACK_NAME', defaultValue: 'Dev-ssm-stack', description: 'Name of the ssmrole stack')
-        string(name: 'DATABASE_STACK_NAME', defaultValue: 'Dev-DB-stack', description: 'Name of the database stack')
-        string(name: 'WEBAPP_STACK_NAME', defaultValue: 'Dev-web-app-stack', description: 'Name of the webapp stack')
-    }
-
     environment {
-        AWS_REGION = 'us-east-1'  
-
-        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUsername'  
-        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword'  
-        JENKINS_OPERATOREMAIL_ROLE_ARN = 'arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail'
-        CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
-
-        NETWORK_STACK_NAME = "${params.NETWORK_STACK_NAME}"
-        SSM_STACK_NAME = "${params.SSM_STACK_NAME}"
-        DATABASE_STACK_NAME = "${params.DATABASE_STACK_NAME}"
-        WEBAPP_STACK_NAME = "${params.WEBAPP_STACK_NAME}"
+        AWS_REGION = 'us-east-1'
+        NETWORK_STACK_NAME = 'Dev-network-stack'
+        SSM_STACK_NAME = 'Dev-ssm-stack'
+        WEBAPP_STACK_NAME = 'Dev-webapp-stack'
+        DATABASE_STACK_NAME = 'Dev-DB-stack'
+        NETWORK_TEMPLATE_FILE = 'network.yaml'
+        SSM_TEMPLATE_FILE = 'SsmRole.yaml'
+        WEBAPP_STACK_FILE = 'webapp.yaml'
+        DATABASE_TEMPLATE_FILE = 'Dev-DB.yaml'
+        JENKINS_USERNAME_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-Username-Role'
+        JENKINS_PASSWORD_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-Password-Role'
+        CLOUDFORMATION_ROLE_ARN = 'arn:aws:iam::235392496232:role/Jenkins-CloudFormation-Role'
+        PARAMETER_STORE_PREFIX = ''
     }
-
-    // Define `getSSMParameters` function outside stages and script blocks
-    // def getSSMParameters(String parameterName, String roleArn) {
-    //     withCredentials([
-    //         [$class: 'AmazonWebServicesCredentialsBinding',
-    //          region: AWS_REGION,
-    //          roleArn: roleArn]
-    //         ]
-    //     ) {
-    //         script {
-    //             sh """
-    //                 ${parameterName}=\$(aws ssm get-parameter --name ${parameterName} --query Parameter.Value --output text)
-    //                 export ${parameterName}
-    //             """
-    //         }
-    //     }
-    // }
-
-    // def deployStack(String templateFile, String stackName, String roleArn) {
-    //     withCredentials([
-    //         [
-    //             $class: 'AmazonWebServicesCredentialsBinding',
-    //             region: AWS_REGION,
-    //             roleArn: roleArn
-    //         ]
-    //     ]) {
-    //         sh """
-    //             aws cloudformation deploy --template-file ${templateFile} --stack-name ${stackName} --region ${AWS_REGION}
-    //         """
-    //     }
-    // }
 
     stages {
-        stage('Deploy') {
+        stage('Retrieve Credentials from SSM') {
             steps {
                 script {
-                    // // Retrieve secrets without function
-                    // withCredentials([
-                    //     [$class: 'AssumeRoleCredentialsBinding',
-                    //      region: AWS_REGION,
-                    //      roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
-                    //     ]) {
-                    //     sh """
-                    //         DATABASE_USERNAME=\$(aws ssm get-parameter --name ${JENKINS_USERNAME_ROLE_ARN} --query Parameter.Value --output text)
-                    //         export DATABASE_USERNAME
-                    //     """
-                    // }
+                    def credentials = aws(credentials: 'your-aws-credentials-id', region: AWS_REGION)
+                    def username = sh(script: "aws ssm get-parameter --name ${PARAMETER_STORE_PREFIX}/MasterUsername --region ${AWS_REGION} --query Parameter.Value --output text", returnStdout: true).trim()
+                    def password = sh(script: "aws ssm get-parameter --name ${PARAMETER_STORE_PREFIX}/MasterUserPassword --region ${AWS_REGION} --with-decryption --query Parameter.Value --output text", returnStdout: true).trim()
+                    def operatorEmail = sh(script: "aws ssm get-parameter --name ${PARAMETER_STORE_PREFIX}/OperatorEmail --region ${AWS_REGION} --query Parameter.Value --output text", returnStdout: true).trim()
 
-                    // withCredentials([
-                    //     [$class: 'AssumeRoleCredentialsBinding',
-                    //      region: AWS_REGION,
-                    //      roleArn:  "${JENKINS_USERNAME_ROLE_ARN}"]
-                    //     ]) {
-                    //     sh """
-                    //         DATABASE_PASSWORD=\$(aws ssm get-parameter --name ${JENKINS_PASSWORD_ROLE_ARN} --query Parameter.Value --output text)
-                    //         export DATABASE_PASSWORD
-                    //     """
-                    // }
+                    echo "Retrieved username: ${username}"
+                    echo "Retrieved password: ${password}"
+                    echo "Retrieved operatorEmail: ${peratorEmail}"
 
-                    // withCredentials([
-                    //     [$class: 'AssumeRoleCredentialsBinding',
-                    //      region: AWS_REGION,
-                    //      roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
-                    //     ]) {
-                    //     sh """
-                    //         OPERATOR_EMAIL=\$(aws ssm get-parameter --name ${JENKINS_OPERATOREMAIL_ROLE_ARN} --query Parameter.Value --output text)
-                    //         export OPERATOR_EMAIL
-                    //     """
-                    // }
-                    withCredentials([
-                        // [$class: 'AssumeCredentialsBinding',
-                        [region: AWS_REGION,
-                         roleArn: "${JENKINS_USERNAME_ROLE_ARN}"]
-                    ]) {
-                        getSSMParameters('DATABASE_USERNAME', JENKINS_USERNAME_ROLE_ARN)
-                    }
-
-                    withCredentials([
-                        // [$class: 'AssumeCredentialsBinding',
-                        [region: AWS_REGION,
-                         roleArn: "${JENKINS_PASSWORD_ROLE_ARN}"]
-                    ]) {
-                        getSSMParameters('DATABASE_PASSWORD', JENKINS_PASSWORD_ROLE_ARN)
-                    }
-
-                    withCredentials([
-                        // [$class: 'AssumeCredentialsBinding',
-                        [region: AWS_REGION,
-                         roleArn: "${JENKINS_OPERATOREMAIL_ROLE_ARN}"]
-                    ]) {
-                        getSSMParameters('OPERATOR_EMAIL', JENKINS_OPERATOREMAIL_ROLE_ARN)
-                    }
-
-                    // Validate CloudFormation templates (optional)
-                    // sh '...'
-
-                    // Deploy Network stack
-                    deployStack('network.yaml', NETWORK_STACK_NAME, CLOUDFORMATION_ROLE_ARN)
-
-                    // Deploy SSM stack
-                    deployStack('JenkinsSSMAccessRole.yaml', SSM_STACK_NAME, CLOUDFORMATION_ROLE_ARN)
-
-                    // Deploy WebApp stack
-                    deployStack('webapp.yaml', WEBAPP_STACK_NAME, CLOUDFORMATION_ROLE_ARN)
-
-                    // Deploy Database stack
-                    deployStack('DB.yaml', DATABASE_STACK_NAME, CLOUDFORMATION_ROLE_ARN)
-                }
-            }
-
-            post {
-                always {
-                    echo "All stack deployments completed!"
+                    // Set environment variables for subsequent stages
+                    env.JENKINS_USERNAME = username
+                    env.JENKINS_PASSWORD = password
+                    env.OPERATOR_EMAIL = operatorEmail
                 }
             }
         }
-    }
 
-    post {
-        success {
-            echo "Pipeline completed successfully!"
+        stage('Assume IAM Role') {
+            steps {
+                script {
+                    // Assume the Jenkins IAM role and get temporary credentials
+                    def assumeRoleCommand = """aws sts assume-role --role-arn ${JENKINS_USERNAME_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
+                    def stsOutput = sh(script: assumeRoleCommand, returnStdout: true).trim()
+                    def credentials = readJSON text: stsOutput
+
+                    env.AWS_ACCESS_KEY_ID = credentials.Credentials.AccessKeyId
+                    env.AWS_SECRET_ACCESS_KEY = credentials.Credentials.SecretAccessKey
+                    env.AWS_SESSION_TOKEN = credentials.Credentials.SessionToken
+
+                    echo "AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}"
+                    echo "AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}"
+                    echo "AWS_SESSION_TOKEN: ${env.AWS_SESSION_TOKEN}"
+                }
+            }
         }
-        failure {
-            echo "Pipeline failed"
+
+        stage('Assume Password Role') {
+            steps {
+                script {
+                    // Assume the Jenkins password IAM role and get temporary credentials
+                    def assumeRoleCommand = """aws sts assume-role --role-arn ${JENKINS_PASSWORD_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
+                    def stsOutput = sh(script: assumeRoleCommand, returnStdout: true).trim()
+                    def credentials = readJSON text: stsOutput
+
+                    env.AWS_ACCESS_KEY_ID = credentials.Credentials.AccessKeyId
+                    env.AWS_SECRET_ACCESS_KEY = credentials.Credentials.SecretAccessKey
+                    env.AWS_SESSION_TOKEN = credentials.Credentials.SessionToken
+
+                    echo "AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}"
+                    echo "AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}"
+                    echo "AWS_SESSION_TOKEN: ${env.AWS_SESSION_TOKEN}"
+                }
+            }
+        }
+
+        stage('Assume CloudFormation Role') {
+            steps {
+                script {
+                    // Assume the CloudFormation IAM role and get temporary credentials
+                    def assumeRoleCommand = """aws sts assume-role --role-arn ${CLOUDFORMATION_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
+                    def stsOutput = sh(script: assumeRoleCommand, returnStdout: true).trim()
+                    def credentials = readJSON text: stsOutput
+
+                    env.AWS_ACCESS_KEY_ID = credentials.Credentials.AccessKeyId
+                    env.AWS_SECRET_ACCESS_KEY = credentials.Credentials.SecretAccessKey
+                    env.AWS_SESSION_TOKEN = credentials.Credentials.SessionToken
+
+                    echo "AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}"
+                    echo "AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}"
+                    echo "AWS_SESSION_TOKEN: ${env.AWS_SESSION_TOKEN}"
+                }
+            }
+        }
+
+        stage('Deploy CloudFormation Stacks') {
+            steps {
+                script {
+                    // Use the assumed IAM role credentials for deployment
+                    def awsAccessKeyId = env.AWS_ACCESS_KEY_ID
+                    def awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY
+                    def awsSessionToken = env.AWS_SESSION_TOKEN
+
+                    sh "aws cloudformation deploy --stack-name ${NETWORK_STACK_NAME} --template-file ${NETWORK_TEMPLATE_FILE} --region ${AWS_REGION} --access-key-id $awsAccessKeyId --secret-access-key $awsSecretAccessKey --session-token $awsSessionToken"
+                    sh "aws cloudformation deploy --stack-name ${WEBAPP_STACK_NAME} --template-file ${WEBAPP_STACK_FILE} --region ${AWS_REGION} --access-key-id $awsAccessKeyId --secret-access-key $awsSecretAccessKey --session-token $awsSessionToken"
+                    sh "aws cloudformation deploy --stack-name ${DATABASE_STACK_NAME} --template-file ${DATABASE_TEMPLATE_FILE} --region ${AWS_REGION} --access-key-id $awsAccessKeyId --secret-access-key $awsSecretAccessKey --session-token $awsSessionToken"
+                    sh "aws cloudformation deploy --stack-name ${SSM_STACK_NAME} --template-file ${SSM_TEMPLATE_FILE} --capabilities CAPABILITY_IAM --region ${AWS_REGION} --access-key-id $awsAccessKeyId --secret-access-key $awsSecretAccessKey --session-token $awsSessionToken"
+                }
+            }
         }
     }
 }
