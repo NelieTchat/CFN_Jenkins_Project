@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Assume the CloudFormation IAM role and get temporary credentials
-                    def assumeRoleCommand = """aws sts assume-role --role-arn ${JENKINS_CLOUDFORMATION_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
+                    def assumeRoleCommand = """aws sts assume-role --role-arn ${CLOUDFORMATION_ROLE_ARN} --role-session-name JenkinsAssumeRoleSession --region ${AWS_REGION} --output json"""
                     def stsOutput = sh(script: assumeRoleCommand, returnStdout: true).trim()
                     def credentials = readJSON text: stsOutput
 
