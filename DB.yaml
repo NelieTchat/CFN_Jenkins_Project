@@ -52,13 +52,13 @@ Parameters:
     Description: ARN of the Secrets Manager secret containing the database username.
     NoEcho: 'true'
     Type: String
-    Default: Alpha
+    Default: admin
 
   MasterUserPassword:
     Description: ARN of the Secrets Manager secret containing the database password.
     NoEcho: 'true'
     Type: String
-    Default: 18tele15
+    Default: XXXXXXXX
 
   DBEngineVersion:
     Description: The database engine version

@@ -21,7 +21,7 @@ Parameters:
   OperatorEmail:
     NoEcho: true
     Type: String
-    Default: tchanel1@yahoo.fr
+    Default: XXXXXXXXXX
 
 Resources:
   LoadBalancer:

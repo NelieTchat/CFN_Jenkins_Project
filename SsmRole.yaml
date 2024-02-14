@@ -48,7 +48,7 @@ Resources:
                   - arn:aws:ssm:us-east-1:235392496232:parameter/MasterUserPassword/*
                   - arn:aws:ssm:us-east-1:235392496232:parameter/OperatorEmail/*  
 
-  SSMInstanceSSMRole:
+  SSMInstanceSSMRole:                         
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
