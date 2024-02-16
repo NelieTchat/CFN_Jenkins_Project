@@ -22,12 +22,12 @@ Parameters:
   VpcId:
     Description: VPC ID
     Type: AWS::EC2::VPC::Id
-    Default: vpc-01036f830afb1116a
+    Default: Your vpc
 
   SubnetId:
     Description: Subnet ID
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-0b350ad62701885c7
+    Default: your subnet
 
 Resources:
   # Attach created role to an instance profile
