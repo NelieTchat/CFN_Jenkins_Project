@@ -8,6 +8,9 @@ pipeline {
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
         APP_NAME = 'lemuel'
         K8S_NAMESPACE = 'prod'
+        // DOCKER_HUB_CREDENTIALS = 'Shammel'
+        // DOCKER_IMAGE = 'tchanela/arlane:holy'
+        EKS_CLUSTER_NAME = 'eksctl-dev-cluster'
     }
 
     stages {
@@ -17,21 +20,27 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image (Multi-arch)') {
+        stage('Pull and Build Docker Image') {
             steps {
                 script {
-                    // Build and push ARM64 image
-                    sh 'docker build -f Dockerfile.arm64 -t hub.docker.com/lemuel:gracious . && docker push hub.docker.com/lemuel:gracious'
+                    // Pull the Docker image
+                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
+                    
+                    // Build the Docker image (if necessary)
+                    sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
+                }
+            }
+        }
 
-                    // Build and push AMD64 image with a different tag
-                    sh 'docker build -f Dockerfile.amd64 -t hub.docker.com/lemuel:gracious-amd64 . && docker push hub.docker.com/lemuel:gracious-amd64'
-
-                    // Use Docker Hub credentials if applicable (consider Secret Text)
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Authenticate with Docker registry
                     withCredentials([usernamePassword(credentialsId: DOCKER_SECRET_TEXT_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
                     }
-
-                    // Push the Docker image to the registry
+                    
+                    // Push the Docker image
                     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
                 }
             }
@@ -40,14 +49,20 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Assuming a pre-existing EKS cluster (replace with your deployment steps)
-                    echo "Deploying to existing EKS cluster..."
+                    // Authenticate with AWS CLI using Jenkins credentials
+                    withCredentials([awsSimpleCredentials(credentialsId: 'your_aws_credentials_id', region: AWS_DEFAULT_REGION)]) {
+                        // Use AWS CLI to configure authentication for EKS
+                        sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
+                        
+                        // Check if authentication is successful
+                        sh "kubectl get svc" // Example command to verify authentication, replace with your deployment steps
 
-                    // Apply Kubernetes deployment
-                    sh "kubectl apply -f k8s/deployment.yaml -n $K8S_NAMESPACE"
+                        // Apply Kubernetes deployment
+                        sh "kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
 
-                    // Other steps (optional)
-                    echo "Deployment complete!"
+                        // Apply Kubernetes service
+                        sh "kubectl apply -f k8s/service.yaml -n ${K8S_NAMESPACE}"
+                    }
                 }
             }
         }
