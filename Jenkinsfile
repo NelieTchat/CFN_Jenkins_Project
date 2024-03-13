@@ -3,12 +3,13 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
-        EKS_CLUSTER_NAME = 'Dev'
+        # EKS_CLUSTER_NAME (removed - use pre-existing cluster)
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
-        
-        DOCKER_HUB_CREDENTIALS_ID = 'Henry' // If using Docker Hub
+
+        // # Use Jenkins Secret Credential ID for Docker Hub credentials (recommended)
+        # DOCKER_HUB_CREDENTIALS_ID = 'Henry'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
-        APP_NAME = 'lemuel'
+        APP_NAME = 'Lemuel'
         K8S_NAMESPACE = 'prod'
     }
 
@@ -26,11 +27,11 @@ pipeline {
                     // Build multi-architecture Docker image
                     sh "docker buildx build --platform linux/arm64,linux/amd64 -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
 
-                    // Use Docker Hub credentials if applicable
+                    // Use Docker Hub credentials if applicable (consider Secret Text)
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
 
                     // Push the Docker image to the registry
-                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
+                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
                 }
             }
         }
@@ -38,14 +39,25 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // // Update the deployment.yaml file with the correct Docker image
-                    // sh "sed -i 's#image:.*#image: ${DOCKER_REGISTRY}/${APP_NAME}:latest#' k8s/deployment.yaml"
+                    // Define waitForDeploymentReady method
+                    def waitForDeploymentReady() {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            // Adjust conditions based on your deployment
+                            waitUntil {
+                                return sh(script: "kubectl get deployments -n $K8S_NAMESPACE | grep ${APP_NAME} | grep -v Rolling | awk '{print \$1}' | xargs -I {} kubectl rollout status deployment {} -n $K8S_NAMESPACE | grep readyReplicas | awk '{print \$2}'", returnStatus: true) == 0
+                            }
+                        }
+                    }
+
+                    // Assuming a pre-existing EKS cluster (replace with your deployment steps)
+                    echo "Deploying to existing EKS cluster..."
 
                     // Apply Kubernetes deployment
+                    waitForDeploymentReady()
                     sh "kubectl apply -f k8s/deployment.yaml -n $K8S_NAMESPACE"
 
-                    // Optional: Wait for deployment to be ready
-                    waitForDeploymentReady()
+                    // Other steps (optional)
+                    echo "Deployment complete!"
                 }
             }
         }
@@ -60,16 +72,6 @@ pipeline {
         }
         failure {
             // Optional: Send notification on build failures
-        }
-    }
-
-    // Function to wait for deployment to be ready
-    def waitForDeploymentReady() {
-        timeout(time: 5, unit: 'MINUTES') {
-            // Adjust conditions based on your deployment
-            waitUntil {
-                return sh(script: "kubectl get deployments -n $K8S_NAMESPACE | grep ${APP_NAME} | grep -v Rolling | awk '{print \$1}' | xargs -I {} kubectl rollout status deployment {} -n $K8S_NAMESPACE | grep readyReplicas | awk '{print \$2}'", returnStatus: true) == 0
-            }
         }
     }
 }
