@@ -3,13 +3,12 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
-        # EKS_CLUSTER_NAME (removed - use pre-existing cluster)
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
 
         // # Use Jenkins Secret Credential ID for Docker Hub credentials (recommended)
-        # DOCKER_HUB_CREDENTIALS_ID = 'Henry'
+        DOCKER_SECRET_TEXT_ID = 'Aimee'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
-        APP_NAME = 'Lemuel'
+        APP_NAME = 'lemuel'
         K8S_NAMESPACE = 'prod'
     }
 
