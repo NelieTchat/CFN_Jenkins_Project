@@ -6,7 +6,7 @@ pipeline {
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
         DOCKER_SECRET_TEXT_ID = 'Aimee'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
-        APP_NAME = 'lemuel'
+        APP_NAME = 'arlane'
         K8S_NAMESPACE = 'prod'
         // DOCKER_HUB_CREDENTIALS = 'Shammel'
         // DOCKER_IMAGE = 'tchanela/arlane:holy'
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Pull the Docker image
-                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
+                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:holy"
                     
                     // Build the Docker image (if necessary)
                     sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
