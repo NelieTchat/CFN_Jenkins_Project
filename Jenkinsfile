@@ -4,8 +4,6 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
-
-        // # Use Jenkins Secret Credential ID for Docker Hub credentials (recommended)
         DOCKER_SECRET_TEXT_ID = 'Aimee'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
         APP_NAME = 'lemuel'
@@ -22,8 +20,11 @@ pipeline {
         stage('Build and Push Docker Image (Multi-arch)') {
             steps {
                 script {
-                    // Build multi-architecture Docker image
-                    sh "docker buildx build --platform linux/arm64,linux/amd64 -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
+                    // Build and push ARM64 image
+                    sh 'docker build -f Dockerfile.arm64 -t hub.docker.com/lemuel:gracious . && docker push hub.docker.com/lemuel:gracious'
+
+                    // Build and push AMD64 image with a different tag
+                    sh 'docker build -f Dockerfile.amd64 -t hub.docker.com/lemuel:gracious-amd64 . && docker push hub.docker.com/lemuel:gracious-amd64'
 
                     // Use Docker Hub credentials if applicable (consider Secret Text)
                     withCredentials([usernamePassword(credentialsId: DOCKER_SECRET_TEXT_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -65,5 +66,4 @@ pipeline {
             // Additional steps for failed build
         }
     }
-
 }
