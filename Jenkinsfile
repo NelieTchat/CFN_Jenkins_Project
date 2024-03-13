@@ -57,10 +57,13 @@ pipeline {
             cleanWs() // Clean up workspace after each build
         }
         success {
-            // Optional: Send notification on successful builds
+            echo "Pipeline succeeded!"
+            // Additional steps for successful build
         }
         failure {
-            // Optional: Send notification on build failures
+            echo "Pipeline failed!"
+            // Additional steps for failed build
         }
     }
+
 }
