@@ -13,7 +13,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 checkout scm
@@ -27,10 +26,12 @@ pipeline {
                     sh "docker buildx build --platform linux/arm64,linux/amd64 -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
 
                     // Use Docker Hub credentials if applicable (consider Secret Text)
-                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
+                    withCredentials([usernamePassword(credentialsId: DOCKER_SECRET_TEXT_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
+                    }
 
                     // Push the Docker image to the registry
-                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
+                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
                 }
             }
         }
@@ -38,21 +39,10 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Define waitForDeploymentReady method
-                    def waitForDeploymentReady() {
-                        timeout(time: 5, unit: 'MINUTES') {
-                            // Adjust conditions based on your deployment
-                            waitUntil {
-                                return sh(script: "kubectl get deployments -n $K8S_NAMESPACE | grep ${APP_NAME} | grep -v Rolling | awk '{print \$1}' | xargs -I {} kubectl rollout status deployment {} -n $K8S_NAMESPACE | grep readyReplicas | awk '{print \$2}'", returnStatus: true) == 0
-                            }
-                        }
-                    }
-
                     // Assuming a pre-existing EKS cluster (replace with your deployment steps)
                     echo "Deploying to existing EKS cluster..."
 
                     // Apply Kubernetes deployment
-                    waitForDeploymentReady()
                     sh "kubectl apply -f k8s/deployment.yaml -n $K8S_NAMESPACE"
 
                     // Other steps (optional)
