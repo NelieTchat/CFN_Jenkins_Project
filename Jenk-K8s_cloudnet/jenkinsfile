@@ -5,23 +5,14 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-east-1'
         EKS_CLUSTER_NAME = 'Dev'
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
-        ROLE_ARN = 'arn:aws:iam::767397897837:role/JenkinsEKSRole'
-
-        DOCKER_HUB_CREDENTIALS_ID = 'maldive' // If using Docker Hub
+        
+        DOCKER_HUB_CREDENTIALS_ID = 'Henry' // If using Docker Hub
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
-        APP_NAME = 'Lemuel'
+        APP_NAME = 'lemuel'
         K8S_NAMESPACE = 'prod'
     }
 
     stages {
-        stage('Assume IAM Role') {
-            steps {
-                script {
-                    // Assume IAM role and set temporary credentials as environment variables
-                    sh "eval \$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins-session --output env)"
-                }
-            }
-        }
 
         stage('Checkout Code') {
             steps {
@@ -39,7 +30,7 @@ pipeline {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
 
                     // Push the Docker image to the registry
-                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
+                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
                 }
             }
         }
@@ -47,8 +38,8 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Update the deployment.yaml file with the correct Docker image
-                    sh "sed -i 's#image:.*#image: ${DOCKER_REGISTRY}/${APP_NAME}:latest#' k8s/deployment.yaml"
+                    // // Update the deployment.yaml file with the correct Docker image
+                    // sh "sed -i 's#image:.*#image: ${DOCKER_REGISTRY}/${APP_NAME}:latest#' k8s/deployment.yaml"
 
                     // Apply Kubernetes deployment
                     sh "kubectl apply -f k8s/deployment.yaml -n $K8S_NAMESPACE"
