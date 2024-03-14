@@ -43,7 +43,7 @@ pipeline {
                     // Update Docker login command
                     withCredentials([usernamePassword(credentialsId: 'Marie', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh """
-                        docker login -u $USERNAME -p $PASSWORD https://hub.docker.com/repository/docker/tchanela/elora/general
+                        docker login -u $USERNAME --password-stdin https://hub.docker.com/repository/docker/tchanela/elora/general <<< $PASSWORD
                         docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}
                         """
                     }
