@@ -9,7 +9,7 @@ pipeline {
         APP_NAME = 'arlane'
         K8S_NAMESPACE = 'prod'
         // DOCKER_HUB_CREDENTIALS = 'Shammel'
-        DOCKER_IMAGE = 'tchanela/arlane:holy'
+        DOCKER_IMAGE = 'tchanela/microservices-containerization:devoted'
         EKS_CLUSTER_NAME = 'eksctl-dev-cluster'
     }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Pull the Docker image
-                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:holy"
+                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:devoted"
                     
                     // Build the Docker image (if necessary)
                     sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."

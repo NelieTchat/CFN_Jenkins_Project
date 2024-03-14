@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: centos-svc
+  name: nginx-svc
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: centos
+    app: nginx
