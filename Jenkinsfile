@@ -6,6 +6,7 @@ pipeline {
         SSH_PUBLIC_KEY = 'DevOps_key_Pair'
         DOCKER_USERNAME = 'your_docker_username'
         DOCKER_PASSWORD = 'your_docker_password'
+        DOCKER_CREDENTIALS_ID= 'Qadmiel'
         DOCKER_REGISTRY = 'https://hub.docker.com/repository/docker/tchanela/elora/general' // Update for your Docker registry URL
         APP_NAME = 'elora'
         K8S_NAMESPACE = 'prod'

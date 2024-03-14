@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: tchanela/microservices-containerization:devoted
+        image: tchanela/elora:gracious
         ports:
         - containerPort: 80
