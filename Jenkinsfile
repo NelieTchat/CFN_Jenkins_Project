@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     // Pull the Docker image
-                    sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:light"
+                    sh "docker pull tchanela/elora:light"
                 }
             }
         }
