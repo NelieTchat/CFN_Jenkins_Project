@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
-        DOCKER_SECRET_TEXT_ID = 'tchanela'
+        DOCKER_CREDENTIALS_ID = 'Shammel'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
         APP_NAME = 'elora'
         K8S_NAMESPACE = 'prod'
@@ -41,8 +41,8 @@ pipeline {
             steps {
                 script {
                     // Authenticate with Docker registry
-                    withCredentials([usernamePassword(credentialsId: DOCKER_SECRET_TEXT_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"    
                     }
 
                     // Push the Docker image
