@@ -46,7 +46,6 @@ pipeline {
             }
         }
 
-
         stage('Deploy to EKS') {
             steps {
                 script {
@@ -60,16 +59,18 @@ pipeline {
             }
         }
 
+        post {
+            always {
+                cleanWs()
+            }
 
-    post {
-        always {
-            cleanWs()
-        }
+            success {
+                echo "Pipeline succeeded!"
+            }
 
-        success {
-            echo "Pipeline succeeded!"
+            failure {
+                echo "Pipeline failed!"
+            }
         }
+    }
 
-        failure {
-            echo "Pipeline failed!"
-        }
