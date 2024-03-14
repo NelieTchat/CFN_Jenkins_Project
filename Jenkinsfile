@@ -4,8 +4,6 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         SSH_PUBLIC_KEY = 'DevOps_key_Pair'
-        DOCKER_USERNAME = 'your_docker_username'
-        DOCKER_PASSWORD = 'your_docker_password'
         DOCKER_CREDENTIALS_ID = 'Marie' // Replace with your Docker credentials ID
         DOCKER_REGISTRY = 'https://hub.docker.com/repository/docker/tchanela/elora/general'
         APP_NAME = 'elora'
