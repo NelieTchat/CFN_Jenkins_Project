@@ -8,8 +8,7 @@ pipeline {
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
         APP_NAME = 'elora'
         K8S_NAMESPACE = 'prod'
-        // DOCKER_HUB_CREDENTIALS = 'Shammel'
-        DOCKER_IMAGE = 'tchanela/elora:light'
+        DOCKER_IMAGE_TAG = 'gracious'
         EKS_CLUSTER_NAME = 'eksctl-dev-cluster'
     }
 
@@ -20,14 +19,20 @@ pipeline {
             }
         }
 
-        stage('Pull and Build Docker Image') {
+        stage('Pull Docker Image') {
             steps {
                 script {
                     // Pull the Docker image
                     sh "docker pull ${DOCKER_REGISTRY}/${APP_NAME}:light"
-                    
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
                     // Build the Docker image (if necessary)
-                    sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:gracious ."
+                    sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG} ."
                 }
             }
         }
@@ -39,9 +44,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: DOCKER_SECRET_TEXT_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}"
                     }
-                    
+
                     // Push the Docker image
-                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:gracious"
+                    sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -72,10 +77,12 @@ pipeline {
         always {
             cleanWs() // Clean up workspace after each build
         }
+        
         success {
             echo "Pipeline succeeded!"
             // Additional steps for successful build
         }
+
         failure {
             echo "Pipeline failed!"
             // Additional steps for failed build
