@@ -46,6 +46,7 @@ pipeline {
             }
         }
 
+
         stage('Deploy to EKS') {
             steps {
                 script {
@@ -72,4 +73,3 @@ pipeline {
         failure {
             echo "Pipeline failed!"
         }
-    }
