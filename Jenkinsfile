@@ -9,7 +9,7 @@ pipeline {
         APP_NAME = 'elora'
         K8S_NAMESPACE = 'prod'
         DOCKER_IMAGE_TAG = 'gracious'
-        EKS_CLUSTER_NAME = 'eksctl-dev-cluster'
+        EKS_CLUSTER_NAME = 'dev'
     }
 
     stages {
