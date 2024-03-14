@@ -32,7 +32,8 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image (if necessary)
-                    sh "docker build -f Dockerfile -t ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG} ."
+                    sh "docker build -f Dockerfile -t tchanela/elora:gracious ."
+
                 }
             }
         }
