@@ -40,7 +40,7 @@ pipeline {
                 script {
                     // Update Docker push command
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        docker.image("${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}").push()
+                        docker.image("tchanela/elora:gracious").push("${DOCKER_IMAGE_TAG}")
                     }
                 }
             }
