@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     // Securely retrieve credentials from Jenkins using withCredentials block
-                    withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS_ID', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'Marie', usernameVariable: 'tchanela', passwordVariable: 'PASSWORD')]) {
                         sh """
                         # Authenticate to Docker registry using retrieved credentials
                         docker login -u ${USERNAME} -p ${PASSWORD} ${DOCKER_REGISTRY}
