@@ -6,7 +6,7 @@ pipeline {
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
         DOCKER_SECRET_TEXT_ID = 'Aimee'
         DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
-        APP_NAME = 'arlane'
+        APP_NAME = 'microservices-containerization'
         K8S_NAMESPACE = 'prod'
         // DOCKER_HUB_CREDENTIALS = 'Shammel'
         DOCKER_IMAGE = 'tchanela/microservices-containerization:devoted'
