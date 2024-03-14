@@ -49,7 +49,6 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    withCredentials([awsSimpleCredentials(credentialsId: 'your_aws_credentials_id', region: AWS_DEFAULT_REGION)]) {
                         sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
                         sh "kubectl get svc"
                         sh "kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
