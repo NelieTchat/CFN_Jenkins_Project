@@ -4,8 +4,8 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         SSH_PUBLIC_KEY = 'DevOps_key_Pair' // Consider using Jenkins Secret Text credential
-        DOCKER_CREDENTIALS_ID = 'Shammel'
-        DOCKER_REGISTRY = 'hub.docker.com' // Update for your Docker registry URL
+        DOCKER_CREDENTIALS_ID = 'Qadmiel'
+        DOCKER_REGISTRY = 'https://hub.docker.com/repository/docker/tchanela/elora/general' // Update for your Docker registry URL
         APP_NAME = 'elora'
         K8S_NAMESPACE = 'prod'
         DOCKER_IMAGE_TAG = 'gracious'
