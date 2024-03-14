@@ -40,9 +40,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    // Update Docker login command
                     withCredentials([usernamePassword(credentialsId: 'Marie', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh """
-                        docker login -u ${USERNAME} -p ${PASSWORD} ${DOCKER_REGISTRY}
+                        echo \${PASSWORD} | docker login -u \${USERNAME} --password-stdin ${DOCKER_REGISTRY}
                         docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}
                         """
                     }
