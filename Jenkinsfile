@@ -42,17 +42,19 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Authenticate with Docker registry
-                    withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS_ID', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} https://hub.docker.com"
-                        // Push the Docker image
-                        sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}"
+                    // Securely retrieve credentials from Jenkins using withCredentials block
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS_ID', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh """
+                        # Authenticate to Docker registry using retrieved credentials
+                        docker login -u ${USERNAME} -p ${PASSWORD} ${DOCKER_REGISTRY}
+
+                        # Push the built image to the registry
+                        docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}
+                        """
                     }
                 }
             }
         }
-
-
 
         stage('Deploy to EKS') {
             steps {
