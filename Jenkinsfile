@@ -44,13 +44,14 @@ pipeline {
                 script {
                     // Authenticate with Docker registry
                     withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS_ID', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} https://hub.docker.com/repository/docker/tchanela/elora/general"
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} https://hub.docker.com"
                         // Push the Docker image
                         sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${DOCKER_IMAGE_TAG}"
                     }
                 }
             }
         }
+
 
 
         stage('Deploy to EKS') {
