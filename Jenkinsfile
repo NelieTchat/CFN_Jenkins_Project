@@ -9,7 +9,7 @@ pipeline {
         APP_NAME = 'arlane'
         K8S_NAMESPACE = 'prod'
         // DOCKER_HUB_CREDENTIALS = 'Shammel'
-        // DOCKER_IMAGE = 'tchanela/arlane:holy'
+        DOCKER_IMAGE = 'tchanela/arlane:holy'
         EKS_CLUSTER_NAME = 'eksctl-dev-cluster'
     }
 
