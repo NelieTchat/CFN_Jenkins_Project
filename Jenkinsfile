@@ -48,8 +48,8 @@ pipeline {
                     withEnv(['PATH+EXTRA=/usr/local/bin']) {
                         sh "aws eks --region us-east-1 update-kubeconfig --name dev"
                         sh "/usr/local/bin/kubectl get svc"
-                        sh "/usr/local/bin/kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
-                        sh "/usr/local/bin/kubectl apply -f k8s/service.yaml -n ${K8S_NAMESPACE}"
+                        sh "/usr/local/bin/kubectl apply -f centos-deployment.yaml -n ${K8S_NAMESPACE}"
+                        sh "/usr/local/bin/kubectl apply -f centos-svc.yaml -n ${K8S_NAMESPACE}"
                     }
                 }
             }
