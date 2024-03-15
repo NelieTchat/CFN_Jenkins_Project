@@ -9,7 +9,6 @@ pipeline {
         EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_NAME = 'tchanela/polished'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
-        DOCKERFILE_PATH = 'Dockerfile'
         DEPLOYMENT_YAML_PATH = 'centos-deployment.yaml'
         SERVICE_YAML_PATH = 'centos-svc.yaml'
     }
@@ -32,7 +31,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -f ${DOCKERFILE_PATH} -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                    sh "docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
                 }
             }
         }
