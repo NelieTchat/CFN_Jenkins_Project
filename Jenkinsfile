@@ -4,9 +4,14 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         DOCKER_CREDENTIALS_ID = 'Marie'
-        K8S_NAMESPACE = 'prod'
-        DOCKER_IMAGE_TAG = 'gracious'
+        K8S_NAMESPACE = 'test'
+        DOCKER_IMAGE_TAG = 'tana'
         EKS_CLUSTER_NAME = 'dev'
+        DOCKER_IMAGE_NAME = 'tchanela/polished'
+        DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
+        DOCKERFILE_PATH = 'Dockerfile'
+        DEPLOYMENT_YAML_PATH = 'centos-deployment.yaml'
+        SERVICE_YAML_PATH = 'centos-svc.yaml'
     }
 
     stages {
@@ -19,7 +24,7 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    sh "docker pull tchanela/elora:light"
+                    sh "docker pull ${DOCKER_IMAGE_NAME}:smooth"
                 }
             }
         }
@@ -27,7 +32,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -f Dockerfile -t tchanela/elora:gracious ."
+                    sh "docker build -f ${DOCKERFILE_PATH} -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
                 }
             }
         }
@@ -35,8 +40,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        docker.image("tchanela/elora:gracious").push("${DOCKER_IMAGE_TAG}")
+                    docker.withRegistry("${DOCKER_IMAGE_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
             }
@@ -49,10 +54,19 @@ pipeline {
                         // Create the namespace if it doesn't exist
                         sh "kubectl create namespace ${K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
 
-                        // Apply deployment YAM
-                        sh "kubectl apply -f nginx-deployment.yaml -n ${K8S_NAMESPACE}"
-                        sh "kubectl apply -f nginx-svc.yaml -n ${K8S_NAMESPACE}"
+                        // Apply deployment YAML
+                        sh "kubectl apply -f ${DEPLOYMENT_YAML_PATH} -n ${K8S_NAMESPACE}"
+                        sh "kubectl apply -f ${SERVICE_YAML_PATH} -n ${K8S_NAMESPACE}"
                     }
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    sh "kubectl get pods -n ${K8S_NAMESPACE}"
+                    // Add additional verification steps as needed
                 }
             }
         }
