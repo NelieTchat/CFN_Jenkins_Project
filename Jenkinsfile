@@ -5,7 +5,7 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-east-1'
         DOCKER_CREDENTIALS_ID = 'Marie'
         K8S_NAMESPACE = 'test'
-        DOCKER_IMAGE_TAG = 'tana'
+        DOCKER_IMAGE_TAG = 'Eliel'
         EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_NAME = 'tchanela/polished'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
