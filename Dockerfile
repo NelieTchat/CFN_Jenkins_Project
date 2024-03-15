@@ -7,7 +7,7 @@ LABEL maintainer="my docker container"
 WORKDIR /usr/share/nginx/html
 
 # Copy specific files and directories from your application into the container
-COPY /Users/mbp/Documents/CFN_Jenkins_Project/webapp webapp/ /usr/share/nginx/html
+COPY webapp/ /usr/share/nginx/html
 
 # Expose port 80 to the outside world
 EXPOSE 80
