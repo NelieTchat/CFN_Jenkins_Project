@@ -39,12 +39,20 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry("${DOCKER_IMAGE_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                    // Use ECR plugin with AWS credentials from role
+                    ecrLogin(
+                        awsAccountId: '767397897837', // Replace with your AWS account ID
+                        region: 'us-east-1' // Update if your ECR registry is in a different region
+                    )
+
+                    // Update registry URL to your ECR repository URL
+                    docker.withRegistry('https://767397897837.dkr.ecr.us-east-1.amazonaws.com', '') {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
             }
         }
+
 
         stage('Deploy to EKS') {
             steps {
