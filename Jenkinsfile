@@ -31,8 +31,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker build -f /Users/mbp/Documents/CFN_Jenkins_Project/webapp/Dockerfile -t tchanela/polished:tana .
-
+                    sh "docker build -f Users/mbp/Documents/CFN_Jenkins_Project/webapp/Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
                 }
             }
         }
