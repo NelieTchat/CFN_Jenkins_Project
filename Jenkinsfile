@@ -59,17 +59,20 @@ pipeline {
             }
         }
 
-        post {
-            always {
-                cleanWs()
+        stage('Final Steps') {
+            steps {
+                // Any final cleanup or notifications can go here
             }
-
-            success {
-                echo "Pipeline succeeded!"
-            }
-
-            failure {
-                echo "Pipeline failed!"
+            post {
+                always {
+                    cleanWs()
+                }
+                success {
+                    echo "Pipeline succeeded!"
+                }
+                failure {
+                    echo "Pipeline failed!"
+                }
             }
         }
     }
