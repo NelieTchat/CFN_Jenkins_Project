@@ -3,8 +3,11 @@ FROM nginx:alpine
 # Add metadata indicating the maintainer
 LABEL maintainer="my docker container"
 
-# Copy the entire folder into the container
-COPY . /usr/share/nginx/html/
+# Set the working directory inside the container
+WORKDIR /usr/share/nginx/html
+
+# Copy specific files and directories from your application into the container
+COPY webapp/ ./
 
 # Expose port 80 to the outside world
 EXPOSE 80
