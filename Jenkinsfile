@@ -50,8 +50,8 @@ pipeline {
                         sh "kubectl create namespace ${K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
 
                         // Apply deployment YAM
-                        sh "kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
-                        sh "kubectl apply -f k8s/service.yaml -n ${K8S_NAMESPACE}"
+                        sh "kubectl apply -f nginx-deployment.yaml -n ${K8S_NAMESPACE}"
+                        sh "kubectl apply -f nginx-svc.yaml -n ${K8S_NAMESPACE}"
                     }
                 }
             }
