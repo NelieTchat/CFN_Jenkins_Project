@@ -6,7 +6,7 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'Elora'
         K8S_NAMESPACE = 'test'
         DOCKER_IMAGE_TAG = 'Samuel'
-        DOCKER_IMAGE_NAME = 'tchanela/arlane'
+        DOCKER_IMAGE_NAME = 'tchanela/polished'
         EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
         DEPLOYMENT_YAML_PATH = 'nginx-deployment.yaml'
