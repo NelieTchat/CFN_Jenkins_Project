@@ -45,7 +45,8 @@ pipeline {
                     def dockerLoginCmd = "aws ecr get-login-password --region ${awsRegion}"
                     def dockerPassword = sh(script: dockerLoginCmd, returnStdout: true).trim()
                     
-                    docker.withRegistry(ecrRepositoryUri, 'docker') {
+                    // Use the correct credential ID for Docker Hub here
+                    withDockerRegistry([credentialsId: 'Marie', url: "https://${ecrRepositoryUri}"]) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
