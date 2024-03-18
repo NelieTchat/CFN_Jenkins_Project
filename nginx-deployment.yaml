@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: tchanela/polished:tana
+        image: tchanela/polished:Eliel
         ports:
         - containerPort: 80
