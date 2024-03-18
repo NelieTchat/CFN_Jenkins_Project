@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: centos-deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: centos
   template:
     metadata:
       labels:
-        app: nginx
+        app: centos
     spec:
       containers:
-      - name: nginx
+      - name: centos-container
         image: tchanela/polished:Samuel
         ports:
         - containerPort: 80
