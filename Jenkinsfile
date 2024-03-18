@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
-        DOCKER_CREDENTIALS_ID = 'Marie'
+        DOCKER_CREDENTIALS_ID = 'Elora'
         K8S_NAMESPACE = 'test'
         DOCKER_IMAGE_TAG = 'Eliel'
         EKS_CLUSTER_NAME = 'dev'
@@ -46,7 +46,7 @@ pipeline {
                     def dockerPassword = sh(script: dockerLoginCmd, returnStdout: true).trim()
                     
                     // Use the correct credential ID for Docker Hub here
-                    withDockerRegistry([credentialsId: 'Marie', url: "https://${ecrRepositoryUri}"]) {
+                    withDockerRegistry([credentialsId: 'Elora', url: "https://${ecrRepositoryUri}"]) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
