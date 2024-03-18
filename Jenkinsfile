@@ -5,12 +5,12 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-east-1'
         DOCKER_CREDENTIALS_ID = 'Elora'
         K8S_NAMESPACE = 'test'
-        DOCKER_IMAGE_TAG = 'Samuel'
+        DOCKER_IMAGE_TAG = 'ViaDora'
         DOCKER_IMAGE_NAME = 'tchanela/polished'
         EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
-        DEPLOYMENT_YAML_PATH = 'centos-deployment.yaml'
-        SERVICE_YAML_PATH = 'centos-svc.yaml'
+        DEPLOYMENT_YAML_PATH = 'nginx-deployment.yaml'
+        SERVICE_YAML_PATH = 'nginx-svc.yaml'
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    sh "docker pull ${DOCKER_IMAGE_NAME}:tana"
+                    sh "docker pull ${DOCKER_IMAGE_NAME}:Eliel"
                 }
             }
         }
