@@ -9,8 +9,8 @@ pipeline {
         DOCKER_IMAGE_NAME = 'tchanela/polished'
         EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
-        DEPLOYMENT_YAML_PATH = 'nginx-deployment.yaml'
-        SERVICE_YAML_PATH = 'nginx-svc.yaml'
+        DEPLOYMENT_YAML_PATH = 'centos-deployment.yaml'
+        SERVICE_YAML_PATH = 'centos-svc.yaml'
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    sh "docker pull ${DOCKER_IMAGE_NAME}:smooth"
+                    sh "docker pull ${DOCKER_IMAGE_NAME}:tana"
                 }
             }
         }
