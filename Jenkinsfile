@@ -5,7 +5,7 @@ pipeline {
         AWS_DEFAULT_REGION = 'us-east-1'
         DOCKER_CREDENTIALS_ID = 'Elora'
         K8S_NAMESPACE = 'test'
-        DOCKER_IMAGE_TAG = 'Eliel'
+        DOCKER_IMAGE_TAG = 'Samuel'
         DOCKER_IMAGE_NAME = 'tchanela/polished'
          EKS_CLUSTER_NAME = 'dev'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
@@ -45,7 +45,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Deploy to EKS') {
             steps {
                 script {
