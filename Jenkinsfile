@@ -39,17 +39,18 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Authenticate Docker with Amazon ECR using AWS CLI
-                    sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE_REGISTRY}'
-
-                    // Push Docker image to Amazon ECR
-                    docker.withRegistry("${DOCKER_IMAGE_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                    def awsRegion = 'us-east-1' // Specify your AWS region here
+                    def ecrRepositoryUri = '767397897837.dkr.ecr.us-east-1.amazonaws.com/myk8s-webapp' // Replace with your ECR repository URI
+                    
+                    def dockerLoginCmd = "aws ecr get-login-password --region ${awsRegion}"
+                    def dockerPassword = sh(script: dockerLoginCmd, returnStdout: true).trim()
+                    
+                    docker.withRegistry(ecrRepositoryUri, 'docker') {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
             }
         }
-
 
         stage('Deploy to EKS') {
             steps {
