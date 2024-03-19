@@ -53,7 +53,7 @@ pipeline {
     stage('Deploy to EKS') {
       steps {
         script {
-          withEnv(['PATH+EXTRA=/usr/local/bin']) {
+        //   withEnv(['PATH+EXTRA=/usr/local/bin']) {
             // Update kubeconfig for the EKS cluster (assuming AWS CLI is configured)
             sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
 
@@ -66,7 +66,7 @@ pipeline {
           }
         }
       }
-    }
+    // }
 
     stage('Verify Deployment') {
       steps {
