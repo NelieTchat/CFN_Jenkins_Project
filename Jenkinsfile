@@ -5,11 +5,12 @@ pipeline {
     AWS_DEFAULT_REGION = 'us-east-1'
     K8S_NAMESPACE = 'staging'
     DOCKER_IMAGE_TAG = 'Hillcrest'
-    AWS_ACCOUNT_ID = '767397897837'  
+    AWS_ACCOUNT_ID = '767397897837'
+    EKS_CLUSTER_NAME = 'dev'  
     IMAGE_REPO_NAME = 'slam'  
     REPOSITORY_URI = '${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
     DEPLOYMENT_YAML_PATH = 'nginx-deployment.yaml'
-    SERVICE_YAML_PATH = 'nginx-svc.yaml'
+    SERVICE_YAML_PATH = 'nginx-svc.yaml
   }
 
   stages {
