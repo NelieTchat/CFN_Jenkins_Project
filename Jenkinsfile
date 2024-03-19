@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     AWS_DEFAULT_REGION = 'us-east-1'
-    K8S_NAMESPACE = 'test'
+    K8S_NAMESPACE = 'staging'
     DOCKER_IMAGE_TAG = 'ViaDora'
     AWS_ACCOUNT_ID = '767397897837'
     EKS_CLUSTER_NAME = 'dev'  
