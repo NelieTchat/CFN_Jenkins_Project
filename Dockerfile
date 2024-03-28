@@ -13,7 +13,9 @@ RUN yum -y install httpd
 RUN yum clean all    
 
 # Copy the contents of the webapp directory into the container
-COPY webapp/ .
+# # if I don't have a WORKDIR I can COPY webapp/ /var/www/html but because I have the 
+# WORKDIR I can just set up like below
+COPY webapp/ .   
 
 # Expose port 80 to the outside world
 EXPOSE 80
