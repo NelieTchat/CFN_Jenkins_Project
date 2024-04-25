@@ -19,7 +19,7 @@
             stage('Build Docker Image') {
                 steps {
                     echo 'This is Build Stage'  //this is the build stage
-                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ." //this will build the docker image
+                    sh "docker build -f docker/Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ." //this will build the docker image
                 }
             }
 
