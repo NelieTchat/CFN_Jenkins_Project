@@ -5,7 +5,7 @@ Parameters:
   InstanceType:
     Description: EC2 instance type
     Type: String
-    Default: t2.xlarge
+    Default: t2.large
     AllowedValues:
       - t2.micro
       - t2.medium
@@ -23,12 +23,12 @@ Parameters:
   VpcId:
     Description: VPC ID
     Type: AWS::EC2::VPC::Id
-    Default: vpc-0d9fab734b1a6143a
+    Default: vpc-0b4ffef94e8d06fbf
 
   SubnetId:
     Description: Subnet ID
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-0b455b136100c5753
+    Default: subnet-059168b6792d0d888
 
 Resources:
   EC2SecurityGroup:
@@ -52,11 +52,11 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
-      ImageId: ami-07d9b9ddc6cd8dd30
+      ImageId: ami-080e1f13689e07408
       SecurityGroupIds:
         - !GetAtt EC2SecurityGroup.GroupId
       SubnetId: !Ref SubnetId
-      IamInstanceProfile: JenkinsEKSRole # Provide the IAM instance profile
+      IamInstanceProfile: Jenkins_Ssm_Role # Provide the IAM instance profile
       UserData:
         Fn::Base64: |
           #!/bin/bash
