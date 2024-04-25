@@ -7,7 +7,7 @@
                 steps {
                     echo 'Cloning the code'
 
-                    git url: "https://github.com/cloudspaceacademy/containerization-deployment.git", branch: "main"
+                    git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "staging"
                 }
             }
             stage('Build') {
