@@ -1,7 +1,7 @@
 
     pipeline {
         agent any
-        environment {1'
+        environment {
         DOCKER_CREDENTIALS_ID = 'Elora'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = 'notes-app'
@@ -9,13 +9,13 @@
     }
 
         stages {
-            // stage('Clone Code') {
-            //     steps {
-            //         echo 'Cloning the code'
+            stage('Clone Code') {
+                steps {
+                    echo 'Cloning the code'
 
-            //         git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "staging"
-            //     }
-            // }
+                    git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "staging"
+                }
+            }
             stage('Build Docker Image') {
                 steps {
                     echo 'This is Build Stage'  //this is the build stage
