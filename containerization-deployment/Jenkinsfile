@@ -1,6 +1,12 @@
 
     pipeline {
         agent any
+        environment {1'
+        DOCKER_CREDENTIALS_ID = 'Elora'
+        DOCKER_IMAGE_TAG = 'latest'
+        DOCKER_IMAGE_NAME = 'notes-app'
+        DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
+    }
 
         stages {
             stage('Clone Code') {
@@ -10,23 +16,23 @@
                     git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "staging"
                 }
             }
-            stage('Build') {
+            stage('Build Docker Image') {
                 steps {
                     echo 'This is Build Stage'  //this is the build stage
-                    sh "docker build -t notes-app ." //this will build the docker image
+                    sh "docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ." //this will build the docker image
                 }
             }
-            stage('Push to Docker hub') {
+            
+            stage('Push Docker Image') {
                 steps {
-                    echo 'Pushing image to dockerhub'
-                    withCredentials([usernamePassword(credentialsId:"dockerhub-login",passwordVariable:"dockerhubpass",usernameVariable:"dockerhubuser" )]){
-                    sh "docker tag notes-app ${env.dockerhubuser}/notes-app:latest"
-                    sh "docker login -u ${env.dockerhubuser} -p ${env.dockerhubpass}" 
-                    sh "docker push ${env.dockerhubuser}/notes-app:latest"
+                    script {
+                        withDockerRegistry([credentialsId: 'Elora', url: "${DOCKER_IMAGE_REGISTRY}"]) {
+                            docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
+                        }
                     }
-
                 }
             }
+        
             stage('Deployement') {
                 steps {
                     echo 'Deploying container'
