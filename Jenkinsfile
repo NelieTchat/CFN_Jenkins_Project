@@ -27,7 +27,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                 sh "docker build -t notes-app ."
+                export DOCKER_BUILDKIT=0
+                sh "docker build -t notes-app ."
             }
         }
 
