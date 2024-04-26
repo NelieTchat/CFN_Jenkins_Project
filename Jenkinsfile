@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        DOCKER_BUILDKIT = '1'
         DOCKER_CREDENTIALS_ID = 'dockqada'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = '/notes-app'
@@ -25,9 +24,11 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            environment {
+                DOCKER_BUILDKIT = '0'
+            }
             steps {
                 echo 'This is Build Stage'
-                export DOCKER_BUILDKIT=0
                 sh "docker build -t notes-app ."
             }
         }
