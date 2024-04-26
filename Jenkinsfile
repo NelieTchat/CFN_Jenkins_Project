@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockery'
         DOCKER_IMAGE_TAG = 'latest'
-        DOCKER_IMAGE_NAME_REPO = 'tchanela/notes-app'
+        DOCKER_IMAGE_REPO = 'tchanela/notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
     }
 
@@ -27,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t ${DOCKER_IMAGE_NAME_REPO}:${DOCKER_IMAGE_TAG} ."
+                sh "docker build -t ${DOCKER_IMAGE_REPO}:${DOCKER_IMAGE_TAG} ."
             }
         }
 
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: 'dockery', url: "${DOCKER_IMAGE_REGISTRY}"]) {
-                        docker.image("${DOCKER_IMAGE_NAME_REPO}:${DOCKER_IMAGE_TAG}").push()
+                        docker.image("${DOCKER_IMAGE_REPO}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
             }
