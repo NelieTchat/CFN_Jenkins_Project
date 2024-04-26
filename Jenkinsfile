@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t notes-app:latest /var/lib/jenkins/workspace/django-docker/Dockerfile "
+                sh "docker build -t notes-app:latest -f /var/lib/jenkins/workspace/django-docker "
             }
         }
 
