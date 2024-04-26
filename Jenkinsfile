@@ -1,11 +1,11 @@
 pipeline {
     agent any
     environment {
+        // DOCKER_BUILDKIT = '1'
         DOCKER_CREDENTIALS_ID = 'dockqada'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = '/notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
-        
     }
 
     stages {
@@ -25,12 +25,9 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            // environment {
-            //     DOCKER_BUILDKIT = '0'
-            // }
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t notes-app ."
+                sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
             }
         }
 
