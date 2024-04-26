@@ -27,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t tchanela/notes-app:latest ."
+                sh "docker build -t ${DOCKER_IMAGE_NAME_REPO}:${DOCKER_IMAGE_TAG} ."
             }
         }
 
