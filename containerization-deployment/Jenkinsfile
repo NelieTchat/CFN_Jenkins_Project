@@ -9,6 +9,15 @@
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
     }
 
+    stages {
+        stage('Check Path') {
+            steps {
+                script {
+                    echo "Current working directory: ${pwd()}"
+                }
+            }
+        }
+
         stages {
             stage('Clone Code') {
                 steps {
