@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        // DOCKER_BUILDKIT = '1'
         DOCKER_CREDENTIALS_ID = 'dockqada'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = 'notes-app'
@@ -21,14 +20,14 @@ pipeline {
         stage('Clone Code') {
             steps {
                 echo 'Cloning the code'
-                git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "staging"
+                git url: "https://github.com/NelieTchat/CFN_Jenkins_Project.git", branch: "main"
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t notes-app:latest -f /var/lib/jenkins/workspace/django-docker "
+                sh "docker build -t notes-app:latest ."
             }
         }
 
