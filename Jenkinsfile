@@ -34,7 +34,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'Elora', url: "${DOCKER_IMAGE_REGISTRY}"]) {
+                    withDockerRegistry([credentialsId: 'dockqada', url: "${DOCKER_IMAGE_REGISTRY}"]) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
