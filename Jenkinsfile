@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockqad'
+        DOCKER_CREDENTIALS_ID = 'dockery'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = 'notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
@@ -34,7 +34,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'dockqad', url: "${DOCKER_IMAGE_REGISTRY}"]) {
+                    withDockerRegistry([credentialsId: 'dockery', url: "${DOCKER_IMAGE_REGISTRY}"]) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
                 }
