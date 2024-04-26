@@ -13,6 +13,7 @@ pipeline {
             steps {
                 script {
                     echo "Current working directory: ${pwd()}"
+                    sh "ls"
                 }
             }
         }
