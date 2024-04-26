@@ -5,6 +5,7 @@ pipeline {
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = '/notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
+        
     }
 
     stages {
@@ -24,9 +25,9 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            environment {
-                DOCKER_BUILDKIT = '0'
-            }
+            // environment {
+            //     DOCKER_BUILDKIT = '0'
+            // }
             steps {
                 echo 'This is Build Stage'
                 sh "docker build -t notes-app ."
