@@ -27,8 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                export DOCKER_BUILDKIT=1
-                sh "docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                sh "export DOCKER_BUILDKIT=1 && docker build -f containerization-deployment/Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
             }
         }
 
@@ -45,7 +44,7 @@ pipeline {
         stage('Deployment') {
             steps {
                 echo 'Deploying container'
-                sh "docker-compose -f docker-compose.yml down && docker-compose up -d"
+                sh "docker-compose -f containerization-deployment/docker-compose.yml down && docker-compose up -d"
             }
         }
     }
