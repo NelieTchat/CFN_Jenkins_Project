@@ -3,7 +3,7 @@
         agent any
         environment {
         DOCKER_BUILDKIT = '1'
-        DOCKER_CREDENTIALS_ID = 'dockqad'
+        DOCKER_CREDENTIALS_ID = 'dockqada'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = 'notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
@@ -30,7 +30,7 @@
                 steps {
                     echo 'This is Build Stage'  //this is the build stage
                     export DOCKER_BUILDKIT=1
-                    sh "docker build -f containerization-deployment/Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ." //this will build the docker image
+                    sh "docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ." //this will build the docker image
                 }
             }
 
@@ -47,7 +47,7 @@
             stage('Deployement') {
                 steps {
                     echo 'Deploying container'
-                    sh "docker-compose -f containerization-deployment/docker-compose.yml down && docker-compose up -d"
+                    sh "docker-compose -f docker-compose.yml down && docker-compose up -d"
                 }
             }
         }
