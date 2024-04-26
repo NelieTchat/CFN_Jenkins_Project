@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockery'
         DOCKER_IMAGE_TAG = 'latest'
-        DOCKER_IMAGE_NAME = 'notes-app'
+        DOCKER_IMAGE_NAME = 'tchanela/notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
     }
 
