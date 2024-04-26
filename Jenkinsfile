@@ -27,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "export DOCKER_BUILDKIT=0 && docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                sh "docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
             }
         }
 
