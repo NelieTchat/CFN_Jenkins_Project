@@ -4,7 +4,7 @@ pipeline {
         // DOCKER_BUILDKIT = '1'
         DOCKER_CREDENTIALS_ID = 'dockqada'
         DOCKER_IMAGE_TAG = 'latest'
-        DOCKER_IMAGE_NAME = '/notes-app'
+        DOCKER_IMAGE_NAME = 'notes-app'
         DOCKER_IMAGE_REGISTRY = 'https://index.docker.io/v1/'
     }
 
