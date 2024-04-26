@@ -27,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'This is Build Stage'
-                sh "docker build -t notes-app:latest ."
+                sh "docker build -t tchanela/notes-app:latest ."
             }
         }
 
