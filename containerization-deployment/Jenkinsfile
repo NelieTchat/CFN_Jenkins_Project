@@ -2,6 +2,7 @@
     pipeline {
         agent any
         environment {
+        DOCKER_BUILDKIT = '1'
         DOCKER_CREDENTIALS_ID = 'Elora'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_NAME = 'notes-app'
